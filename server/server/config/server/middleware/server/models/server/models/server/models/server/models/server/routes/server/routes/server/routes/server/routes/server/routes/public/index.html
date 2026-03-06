@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>패스커넥션 — 합격자와 취준생을 잇다</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══ TOKENS ═══ */
+:root{
+  --bg:#0a0a0f;--surf:#111118;--surf2:#18181f;--surf3:#20202a;
+  --border:#252532;--border2:#2f2f3f;
+  --a:#6c63ff;--a-dim:rgba(108,99,255,.14);--a-glow:rgba(108,99,255,.35);
+  --a2:#ff6584;--a3:#43e97b;
+  --gold:#f5c842;--silver:#b0b8cc;--bronze:#d08060;
+  --t:#eeeeff;--t2:#8888aa;--t3:#44445a;
+  --coffee:#c8956c;--coffee2:#8b5e3c;--coffee-glow:rgba(200,149,108,.35);
+  --r-s:6px;--r-m:10px;--r-l:16px;--r-xl:20px;
+  --shadow:0 4px 24px rgba(0,0,0,.5);
+  --shadow-a:0 8px 32px rgba(108,99,255,.25);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.02'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.3;}
+
+/* ═══ BUTTONS ═══ */
+.btn{padding:8px 18px;border-radius:var(--r-m);font-size:13px;font-weight:600;border:none;transition:all .18s var(--ease);display:inline-flex;align-items:center;gap:6px;}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--border2);}
+.btn-ghost:hover{border-color:var(--a);color:var(--a);}
+.btn-primary{background:var(--a);color:#fff;}
+.btn-primary:hover{background:#7b73ff;box-shadow:var(--shadow-a);}
+.btn-filled{background:linear-gradient(135deg,var(--a),#8b7fff);color:#fff;box-shadow:0 4px 18px var(--a-glow);}
+.btn-filled:hover{filter:brightness(1.1);box-shadow:0 6px 28px var(--a-glow);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--t2);}
+.btn-outline:hover{border-color:var(--a);color:var(--a);}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn-lg{padding:13px 30px;font-size:15px;border-radius:var(--r-l);}
+
+/* ═══ NAV ═══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,15,.92);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid var(--border);}
+.logo{font-size:19px;font-weight:800;letter-spacing:-.5px;cursor:pointer;display:flex;align-items:center;gap:2px;}
+.logo .dot{color:var(--a);}
+.nav-center{display:flex;align-items:center;gap:4px;}
+.nav-tab{padding:6px 14px;border-radius:var(--r-m);font-size:13px;font-weight:500;color:var(--t2);background:transparent;border:none;transition:all .18s;white-space:nowrap;}
+.nav-tab:hover{color:var(--t);background:var(--surf2);}
+.nav-tab.active{color:var(--a);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-icon-btn{width:36px;height:36px;border-radius:50%;background:transparent;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--t2);transition:all .18s;position:relative;}
+.nav-icon-btn:hover{border-color:var(--a);color:var(--a);}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--a2);border:2px solid var(--bg);}
+
+/* ═══ HERO ═══ */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 60px;overflow:hidden;z-index:1;}
+.hero-glow{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;}
+.glow-1{width:520px;height:520px;background:radial-gradient(var(--a),transparent 70%);opacity:.12;top:-60px;left:10%;}
+.glow-2{width:400px;height:400px;background:radial-gradient(var(--a2),transparent 70%);opacity:.1;bottom:-40px;right:8%;}
+.glow-3{width:300px;height:300px;background:radial-gradient(var(--a3),transparent 70%);opacity:.07;top:40%;left:60%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px 5px 8px;border-radius:100px;border:1px solid rgba(108,99,255,.3);background:rgba(108,99,255,.08);font-size:12px;color:var(--a);font-weight:500;margin-bottom:24px;animation:fadeUp .5s both;}
+.eyebrow-badge{background:var(--a);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+.pulse-dot{width:5px;height:5px;border-radius:50%;background:var(--a3);animation:pulse 2.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(1.5);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.hero-title{font-size:clamp(38px,6.5vw,76px);font-weight:800;line-height:1.06;letter-spacing:-3px;margin-bottom:18px;animation:fadeUp .5s .08s both;}
+.hero-title .hl{background:linear-gradient(120deg,var(--a) 0%,#b48cff 50%,var(--a2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:17px;color:var(--t2);max-width:480px;line-height:1.75;margin-bottom:36px;animation:fadeUp .5s .16s both;}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;animation:fadeUp .5s .24s both;}
+.stats-row{display:flex;gap:0;margin-top:56px;background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;animation:fadeUp .5s .32s both;}
+.stat-item{flex:1;padding:20px 28px;border-right:1px solid var(--border);text-align:center;}
+.stat-item:last-child{border-right:none;}
+.stat-n{font-size:24px;font-weight:800;color:var(--a);letter-spacing:-1px;}
+.stat-l{font-size:11px;color:var(--t2);margin-top:3px;font-weight:500;}
+
+/* ═══ SECTION ═══ */
+.section{position:relative;z-index:1;padding:80px 24px;max-width:1120px;margin:0 auto;}
+.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--a);margin-bottom:10px;}
+.sec-title{font-size:clamp(24px,4vw,40px);font-weight:800;letter-spacing:-1.5px;line-height:1.15;margin-bottom:12px;}
+.sec-sub{font-size:14px;color:var(--t2);max-width:460px;line-height:1.8;margin-bottom:44px;}
+
+/* steps */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.step-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);padding:28px 22px;transition:all .25s var(--ease);position:relative;overflow:hidden;}
+.step-card:hover{border-color:var(--a);transform:translateY(-4px);box-shadow:0 16px 40px rgba(108,99,255,.1);}
+.step-n{font-size:40px;font-weight:800;color:var(--border2);line-height:1;margin-bottom:14px;}
+.step-title{font-size:16px;font-weight:700;margin-bottom:8px;}
+.step-desc{font-size:12.5px;color:var(--t2);line-height:1.75;}
+
+/* trust */
+.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;}
+.trust-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px 20px;text-align:center;transition:all .25s;}
+.trust-card:hover{border-color:rgba(108,99,255,.4);transform:translateY(-3px);}
+.trust-icon{font-size:32px;margin-bottom:10px;}
+.trust-tier{font-size:14px;font-weight:700;margin-bottom:7px;}
+.trust-desc{font-size:12px;color:var(--t2);line-height:1.75;}
+
+/* ═══ MENTOR CONTROLS ═══ */
+.mentor-controls{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.search-wrap{flex:1;min-width:200px;position:relative;display:flex;align-items:center;}
+.search-wrap svg{position:absolute;left:12px;color:var(--t3);pointer-events:none;}
+.search-input{width:100%;padding:10px 14px 10px 38px;border-radius:var(--r-l);background:var(--surf);border:1px solid var(--border2);color:var(--t);font-size:13px;outline:none;transition:border-color .18s;}
+.search-input:focus{border-color:var(--a);}
+.search-input::placeholder{color:var(--t3);}
+.sort-select{padding:10px 14px;border-radius:var(--r-l);background:var(--surf);border:1px solid var(--border2);color:var(--t2);font-size:13px;outline:none;cursor:pointer;}
+.sort-select:focus{border-color:var(--a);}
+.pill-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;}
+.pill-tab{padding:7px 18px;border-radius:100px;font-size:13px;font-weight:600;border:1px solid var(--border2);color:var(--t2);background:transparent;transition:all .18s;}
+.pill-tab:hover{border-color:rgba(108,99,255,.5);color:var(--a);}
+.pill-tab.active{background:var(--a);border-color:var(--a);color:#fff;box-shadow:0 2px 12px var(--a-glow);}
+
+/* ═══ MENTOR CARD ═══ */
+/* ★핵심: 카드 자체는 overflow:visible 유지, 내부 clip 래퍼로 배너 clipping 처리 */
+.mentors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.mc{
+  background:var(--surf);border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  overflow:visible; /* 아바타가 배너 위로 돌출되기 위해 visible */
+  transition:all .22s var(--ease);cursor:pointer;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+.mc:hover{border-color:rgba(108,99,255,.45);transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.4),0 0 0 1px rgba(108,99,255,.1);}
+
+/* 내부 배너+바디를 감싸는 clip 래퍼 — 배너는 여기서 clipping */
+.mc-clip{
+  border-radius:var(--r-xl);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  flex:1;
+}
+
+/* 배너 */
+.mc-banner{height:80px;position:relative;overflow:hidden;flex-shrink:0;}
+.mc-banner-bg{position:absolute;inset:0;opacity:.5;}
+.mc-banner-pattern{position:absolute;inset:0;opacity:.08;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:8px 8px;}
+
+/* ★별 버튼은 .mc 직계 자식 — overflow:visible인 .mc 위에서 절대위치 */
+.mc-star{
+  position:absolute;top:10px;right:10px;z-index:10;
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(10,10,15,.75);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all .18s;color:var(--t3);
+}
+.mc-star:hover{background:rgba(245,200,66,.15);border-color:var(--gold);color:var(--gold);transform:scale(1.1);}
+.mc-star.saved{background:rgba(245,200,66,.18);border-color:var(--gold);color:var(--gold);}
+
+/* 바디 — 배너와 이어지는 흰색 배경 영역 */
+.mc-body{padding:0 16px 16px;flex:1;display:flex;flex-direction:column;background:var(--surf);}
+
+/* ★아바타 행 — margin-top 음수로 배너 위에 올라감, z-index로 배너 위 표시 */
+.mc-av-row{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-top:-38px;   /* 배너 위로 돌출 */
+  margin-bottom:10px;
+  position:relative;z-index:5; /* 배너(.mc-banner z-index:auto) 위 */
+}
+/* ★아바타 — overflow:hidden은 자기 자신에만, 부모 overflow:visible로 잘리지 않음 */
+.mc-av{
+  width:72px;height:72px;border-radius:14px;
+  border:3px solid var(--surf);
+  overflow:hidden;  /* 자기 자신의 img만 clip */
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:800;color:#fff;
+  flex-shrink:0;background:var(--surf3);
+  box-shadow:0 2px 12px rgba(0,0,0,.45);
+}
+.mc-av img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+
+.mc-chat-quick{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:100px;font-size:11px;font-weight:700;border:1.5px solid var(--a);color:var(--a);background:var(--a-dim);transition:all .18s;margin-bottom:3px;}
+.mc-chat-quick:hover{background:var(--a);color:#fff;}
+.mc-name{font-size:15px;font-weight:700;margin-bottom:1px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.mc-sub{font-size:12px;color:var(--t2);margin-bottom:1px;font-weight:500;}
+.mc-loc-line{font-size:11px;color:var(--t3);margin-bottom:9px;}
+.mc-bio{font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex-grow:1;}
+.mc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.tag{padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500;border:1px solid var(--border2);color:var(--t2);}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:auto;}
+.mc-price-w{line-height:1.3;}
+.mc-price{font-size:14px;font-weight:700;}
+.mc-price small{font-size:10px;font-weight:400;color:var(--t2);}
+.mc-stars{font-size:10px;color:var(--t3);}
+.mc-stars.has{color:var(--gold);font-weight:600;}
+
+/* vbadge */
+.vbadge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:100px;font-size:10px;font-weight:700;vertical-align:middle;white-space:nowrap;}
+.vbadge.gold{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.25);}
+.vbadge.silver{background:rgba(176,184,204,.1);color:var(--silver);border:1px solid rgba(176,184,204,.2);}
+.vbadge.bronze{background:rgba(208,128,96,.1);color:var(--bronze);border:1px solid rgba(208,128,96,.2);}
+.vbadge-full{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;white-space:nowrap;}
+.vbadge-full.gold{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.25);}
+.vbadge-full.silver{background:rgba(176,184,204,.1);color:var(--silver);border:1px solid rgba(176,184,204,.2);}
+.vbadge-full.bronze{background:rgba(208,128,96,.1);color:var(--bronze);border:1px solid rgba(208,128,96,.2);}
+
+/* ═══ SKELETON ═══ */
+.skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.skel-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
+.skel{background:linear-gradient(90deg,var(--surf2) 25%,var(--surf3) 50%,var(--surf2) 75%);background-size:400% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{0%{background-position:100% 50%;}100%{background-position:-100% 50%;}}
+.skel-banner{height:80px;border-radius:0;margin-bottom:0;}
+.skel-body{padding:0 16px 16px;}
+.skel-av{width:72px;height:72px;border-radius:14px;margin-top:-36px;margin-bottom:12px;border:3px solid var(--surf);}
+.skel-line{height:12px;margin-bottom:8px;}
+.skel-line.w80{width:80%;}.skel-line.w60{width:60%;}.skel-line.w40{width:40%;}
+
+/* empty */
+.empty-state{grid-column:1/-1;text-align:center;padding:72px 24px;background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);}
+.empty-icon{font-size:52px;margin-bottom:16px;opacity:.7;}
+.empty-title{font-size:18px;font-weight:700;margin-bottom:8px;}
+.empty-sub{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:24px;}
+
+/* ═══ PRICING ═══ */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;max-width:860px;margin:0 auto;}
+.price-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);padding:32px 26px;position:relative;transition:all .25s;}
+.price-card.feat{background:linear-gradient(160deg,rgba(108,99,255,.1),rgba(255,101,132,.05));border-color:rgba(108,99,255,.4);box-shadow:0 0 40px rgba(108,99,255,.1);}
+.price-card:hover{transform:translateY(-3px);}
+.feat-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;font-size:10px;font-weight:700;padding:3px 13px;border-radius:100px;white-space:nowrap;}
+.plan-name{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.plan-price{font-size:36px;font-weight:800;letter-spacing:-2px;margin-bottom:2px;}
+.plan-price small{font-size:14px;font-weight:400;color:var(--t2);}
+.plan-period{font-size:11px;color:var(--t3);margin-bottom:22px;}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
+.plan-feats li{font-size:13px;color:var(--t2);display:flex;align-items:center;gap:8px;}
+.plan-feats li::before{content:'✓';color:var(--a3);font-weight:700;flex-shrink:0;}
+.plan-feats li.off{color:var(--t3);}
+.plan-feats li.off::before{content:'–';color:var(--t3);}
+.plan-btn{width:100%;padding:12px;border-radius:var(--r-m);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .18s;font-family:inherit;}
+.plan-btn.outline{background:transparent;border:1px solid var(--border2);color:var(--t2);}
+.plan-btn.outline:hover{border-color:var(--a);color:var(--a);}
+.plan-btn.filled{background:linear-gradient(135deg,var(--a),#8b7fff);color:#fff;box-shadow:0 6px 22px var(--a-glow);}
+.plan-btn.filled:hover{filter:brightness(1.08);}
+
+/* ═══ MODAL ═══ */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .22s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surf);border:1px solid var(--border2);border-radius:var(--r-xl);padding:28px;width:100%;transform:translateY(16px) scale(.98);transition:transform .22s var(--ease);position:relative;}
+.overlay.open .modal{transform:translateY(0) scale(1);}
+.modal-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:var(--surf2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--t2);cursor:pointer;transition:all .18s;}
+.modal-close:hover{background:var(--surf3);color:var(--t);}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:5px;padding-right:36px;}
+.modal-sub{font-size:13px;color:var(--t2);margin-bottom:22px;line-height:1.6;}
+.mform{display:flex;flex-direction:column;gap:9px;}
+.mform label,.flabel{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:2px;display:block;letter-spacing:.5px;text-transform:uppercase;}
+.finput{width:100%;padding:10px 13px;border-radius:var(--r-m);background:var(--surf2);border:1px solid var(--border2);color:var(--t);font-size:13px;outline:none;transition:border-color .18s;}
+.finput:focus{border-color:var(--a);}
+.finput::placeholder{color:var(--t3);}
+.modal-row{display:flex;gap:8px;}
+.modal-row .finput{flex:1;}
+.modal-actions{display:flex;gap:8px;margin-top:20px;}
+.modal-actions button{flex:1;}
+.ftabs{display:flex;gap:3px;background:var(--surf2);border-radius:var(--r-m);padding:3px;margin-bottom:18px;}
+.ftab{flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--t2);transition:all .18s;font-family:inherit;white-space:nowrap;}
+.ftab.active{background:var(--a);color:#fff;}
+.v-opt{background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r-l);padding:14px;cursor:pointer;transition:all .18s;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+.v-opt:hover{border-color:rgba(108,99,255,.5);}
+.v-opt.sel{border-color:var(--a);background:rgba(108,99,255,.07);}
+.v-opt-icon{font-size:20px;flex-shrink:0;}
+.v-opt-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.v-opt-sub{font-size:11px;color:var(--t2);}
+.del-btn{background:none;border:none;color:var(--t3);font-size:16px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;}
+.del-btn:hover{color:var(--a2);}
+.upload-zone{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border:1.5px dashed var(--border2);border-radius:var(--r-m);cursor:pointer;font-size:12px;color:var(--t2);transition:all .18s;width:100%;background:transparent;}
+.upload-zone:hover{border-color:var(--a);color:var(--a);}
+
+/* ─── 경력 행 (카테고리 + 기간 + 내용) ─── */
+.career-row{
+  display:grid;
+  grid-template-columns:100px 90px 1fr auto;
+  gap:6px;align-items:center;
+  background:var(--surf2);border:1px solid var(--border2);
+  border-radius:var(--r-m);padding:8px 10px;
+}
+.career-row .finput{padding:6px 10px;font-size:12px;background:var(--surf3);}
+.career-type-icon{font-size:18px;text-align:center;}
+
+/* ─── 미디어 ─── */
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
+.photo-thumb{aspect-ratio:1;border-radius:9px;overflow:hidden;position:relative;background:var(--surf2);border:1px solid var(--border2);}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;}
+.thumb-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.vfile-item{display:flex;align-items:center;gap:8px;padding:9px 11px;background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r-m);font-size:12px;margin-bottom:6px;}
+.vfile-item .fname{flex:1;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ─── 외부 링크 등록 폼 행 ─── */
+.lrow{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.lrow .finput{flex:1;}
+.lrow-label{width:90px;flex-shrink:0;}
+
+/* ═══ PROFILE PAGE ═══ */
+#profile-page{position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;transform:translateX(100%);transition:transform .35s var(--ease);}
+#profile-page.open{transform:translateX(0);}
+.pp-topbar{position:sticky;top:0;z-index:20;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(10,10,15,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.pp-topbar-left{display:flex;align-items:center;gap:12px;}
+.pp-back{display:flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--r-m);background:transparent;border:1px solid var(--border2);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;}
+.pp-back:hover{border-color:var(--a);color:var(--a);}
+.pp-topbar-right{display:flex;align-items:center;gap:8px;}
+
+/* 2-col layout */
+.pp-wrap{max-width:860px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start;}
+@media(max-width:720px){.pp-wrap{grid-template-columns:1fr;}}
+.pp-left{display:flex;flex-direction:column;gap:12px;}
+
+/* 프로필 헤더 카드 */
+.pp-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
+.pp-cover{height:160px;position:relative;background:linear-gradient(135deg,#1a1a2e,#232340);}
+.pp-cover-bg{position:absolute;inset:0;opacity:.4;}
+.pp-card-body{padding:0 22px 22px;}
+.pp-av-row{
+  display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  margin-top:-48px;margin-bottom:14px;
+  position:relative;z-index:5;
+}
+.pp-av{
+  width:96px;height:96px;border-radius:18px;
+  border:4px solid var(--surf);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;font-weight:800;color:#fff;flex-shrink:0;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+.pp-av img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.pp-av-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-bottom:4px;}
+.pp-name{font-size:22px;font-weight:800;letter-spacing:-.6px;margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.pp-headline{font-size:14px;color:var(--t2);margin-bottom:3px;font-weight:500;}
+.pp-location{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:4px;}
+.pp-metrics-row{display:flex;gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:14px 0;}
+.pp-metric{flex:1;padding:12px 8px;text-align:center;border-right:1px solid var(--border);}
+.pp-metric:last-child{border-right:none;}
+.pp-metric-n{font-size:18px;font-weight:800;color:var(--a);}
+.pp-metric-l{font-size:10px;color:var(--t3);margin-top:1px;font-weight:500;}
+
+/* 섹션 블록 */
+.pp-sec{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px 22px;}
+.pp-sec-hd{font-size:15px;font-weight:700;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.pp-sec-hd-left{display:flex;align-items:center;gap:8px;}
+
+/* 경력 아이템 (프로필 페이지) */
+.pp-career-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
+.pp-career-item:first-child{padding-top:0;}
+.pp-career-item:last-child{border-bottom:none;padding-bottom:0;}
+.pp-career-icon{
+  width:42px;height:42px;border-radius:11px;
+  background:var(--surf2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.pp-career-icon.edu{background:rgba(67,233,123,.08);border-color:rgba(67,233,123,.25);}
+.pp-career-icon.work{background:rgba(108,99,255,.08);border-color:rgba(108,99,255,.25);}
+.pp-career-icon.intern{background:rgba(245,200,66,.08);border-color:rgba(245,200,66,.25);}
+.pp-career-icon.award{background:rgba(255,101,132,.08);border-color:rgba(255,101,132,.25);}
+.pp-career-icon.cert{background:rgba(79,172,254,.08);border-color:rgba(79,172,254,.25);}
+.pp-career-detail{flex:1;min-width:0;}
+.pp-career-content{font-size:14px;font-weight:700;margin-bottom:2px;}
+.pp-career-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px;}
+.pp-career-period{font-size:11px;color:var(--t3);}
+.pp-career-type-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+.pp-career-type-pill.edu{background:rgba(67,233,123,.1);color:var(--a3);}
+.pp-career-type-pill.work{background:var(--a-dim);color:var(--a);}
+.pp-career-type-pill.intern{background:rgba(245,200,66,.1);color:var(--gold);}
+.pp-career-type-pill.award{background:rgba(255,101,132,.1);color:var(--a2);}
+.pp-career-type-pill.cert{background:rgba(79,172,254,.1);color:#4facfe;}
+.pp-career-desc{font-size:12px;color:var(--t2);margin-top:4px;line-height:1.6;}
+
+/* chip */
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{padding:5px 13px;border-radius:100px;font-size:12px;font-weight:500;}
+.chip-s{background:var(--surf2);border:1px solid var(--border2);color:var(--t2);}
+.chip-h{background:var(--a-dim);border:1px solid rgba(108,99,255,.3);color:var(--a);font-weight:600;}
+
+/* 미디어 그리드 */
+.pp-media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.pp-media-cell{aspect-ratio:1;border-radius:var(--r-m);overflow:hidden;cursor:pointer;position:relative;}
+.pp-media-cell img{width:100%;height:100%;object-fit:cover;transition:transform .25s;}
+.pp-media-cell:hover img{transform:scale(1.05);}
+.pp-media-cell-overlay{position:absolute;inset:0;background:rgba(0,0,0,.0);display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.pp-media-cell:hover .pp-media-cell-overlay{background:rgba(0,0,0,.3);}
+
+/* 비디오 아이템 */
+.pp-video-item{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 15px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-l);
+  color:var(--t);text-decoration:none;transition:all .18s;margin-bottom:8px;
+}
+.pp-video-item:hover{border-color:var(--a);background:rgba(108,99,255,.06);}
+.pp-video-icon{font-size:22px;flex-shrink:0;}
+.pp-video-info{flex:1;min-width:0;}
+.pp-video-title{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-video-sub{font-size:11px;color:var(--t3);}
+
+/* ★외부 링크 카드 */
+.pp-link-card{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 15px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r-l);
+  color:var(--t);text-decoration:none;transition:all .18s;margin-bottom:8px;
+  cursor:pointer;
+}
+.pp-link-card:last-child{margin-bottom:0;}
+.pp-link-card:hover{border-color:var(--a);background:rgba(108,99,255,.06);transform:translateX(3px);}
+.pp-link-favicon{width:36px;height:36px;border-radius:9px;background:var(--surf3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.pp-link-body{flex:1;min-width:0;}
+.pp-link-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.pp-link-url{font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-link-arrow{font-size:14px;color:var(--t3);flex-shrink:0;}
+
+/* review */
+.review-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.review-item:first-child{padding-top:0;}
+.review-item:last-child{border-bottom:none;padding-bottom:0;}
+.review-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.review-name{font-size:12px;font-weight:700;}
+.review-stars{font-size:12px;color:var(--gold);}
+.review-text{font-size:13px;color:var(--t2);line-height:1.65;}
+.review-date{font-size:10px;color:var(--t3);margin-top:3px;}
+
+/* sidebar */
+.pp-right{display:flex;flex-direction:column;gap:12px;position:sticky;top:66px;}
+.pp-sidebar-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px;}
+.sidebar-price{font-size:28px;font-weight:800;letter-spacing:-1.5px;margin-bottom:2px;}
+.sidebar-price-sub{font-size:12px;color:var(--t2);margin-bottom:16px;}
+.sidebar-divider{height:1px;background:var(--border);margin:14px 0;}
+.sidebar-detail{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);margin-bottom:8px;}
+.sidebar-detail:last-child{margin-bottom:0;}
+
+/* ═══ CHAT ═══ */
+#chat-panel{position:fixed;inset:0;z-index:600;display:flex;flex-direction:column;background:var(--bg);transform:translateX(100%);transition:transform .32s var(--ease);}
+#chat-panel.open{transform:translateX(0);}
+.chat-topbar{height:56px;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--surf);border-bottom:1px solid var(--border);flex-shrink:0;}
+.chat-av{width:36px;height:36px;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;}
+.chat-av img{width:100%;height:100%;object-fit:cover;}
+.chat-info{flex:1;min-width:0;}
+.chat-name{font-size:14px;font-weight:700;line-height:1.3;}
+.chat-status{font-size:11px;color:var(--a3);font-weight:500;}
+.chat-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;}
+.chat-messages::-webkit-scrollbar{width:4px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+.msg-row{display:flex;gap:8px;max-width:78%;align-items:flex-end;}
+.msg-row.mine{flex-direction:row-reverse;margin-left:auto;}
+.msg-av{width:28px;height:28px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;align-self:flex-start;margin-top:2px;}
+.msg-av img{width:100%;height:100%;object-fit:cover;}
+.msg-bubble{padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.6;word-break:break-word;}
+.msg-row:not(.mine) .msg-bubble{background:var(--surf2);color:var(--t);border-bottom-left-radius:4px;border:1px solid var(--border);}
+.msg-row.mine .msg-bubble{background:var(--a);color:#fff;border-bottom-right-radius:4px;box-shadow:0 2px 12px var(--a-glow);}
+.msg-time{font-size:10px;color:var(--t3);white-space:nowrap;padding:0 2px;margin-bottom:2px;}
+.msg-row.mine .msg-time{text-align:right;}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:2px 4px;}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--t3);animation:blink 1.3s infinite;}
+.typing-dots span:nth-child(2){animation-delay:.2s;}
+.typing-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.3;transform:scale(1);}40%{opacity:1;transform:scale(1.2);}}
+.chat-input-area{padding:12px 16px;background:var(--surf);border-top:1px solid var(--border);flex-shrink:0;}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end;}
+.chat-input{flex:1;padding:10px 14px;border-radius:var(--r-xl);background:var(--surf2);border:1px solid var(--border2);color:var(--t);font-size:13px;outline:none;resize:none;max-height:120px;line-height:1.5;font-family:inherit;transition:border-color .18s;}
+.chat-input:focus{border-color:var(--a);}
+.chat-input::placeholder{color:var(--t3);}
+.chat-send{width:38px;height:38px;border-radius:50%;background:var(--a);border:none;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .18s;flex-shrink:0;}
+.chat-send:hover{background:#7b73ff;transform:scale(1.05);}
+.chat-hint{font-size:10px;color:var(--t3);text-align:center;margin-top:6px;}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surf2);border:1px solid rgba(108,99,255,.4);border-radius:var(--r-l);padding:12px 20px;font-size:13px;font-weight:600;color:var(--t);z-index:900;transform:translateY(70px) scale(.95);opacity:0;transition:all .35s var(--ease);pointer-events:none;max-width:300px;box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateY(0) scale(1);opacity:1;}
+
+
+/* ══ HERO NEW COPY ══ */
+.hero-kicker{font-size:clamp(13px,1.8vw,15px);font-weight:700;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;animation:fadeUp .5s .04s both;}
+.hero-tagline{font-size:clamp(17px,2.6vw,26px);color:var(--t2);font-weight:500;margin-bottom:14px;animation:fadeUp .5s .12s both;}
+.hero-token-badge{display:inline-flex;align-items:center;gap:12px;padding:10px 20px 10px 10px;border-radius:100px;background:rgba(200,149,108,.08);border:1px solid rgba(200,149,108,.28);cursor:pointer;margin-top:28px;transition:all .2s;animation:fadeUp .5s .28s both;}
+.hero-token-badge:hover{background:rgba(200,149,108,.15);border-color:rgba(200,149,108,.5);transform:scale(1.02);}
+.hero-token-img{width:40px;height:40px;}
+
+/* ══ NAV COINS ══ */
+.nav-coins{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:100px;background:rgba(200,149,108,.1);border:1px solid rgba(200,149,108,.25);font-size:12px;font-weight:700;color:var(--coffee);cursor:pointer;transition:all .18s;}
+.nav-coins:hover{background:rgba(200,149,108,.18);}
+.nav-user-av{width:30px;height:30px;border-radius:50%;background:var(--a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;cursor:pointer;}
+
+/* ══ PAYMENT MODAL ══ */
+.pay-token-header{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(200,149,108,.08),rgba(108,99,255,.06));border:1px solid rgba(200,149,108,.2);border-radius:var(--r-l);padding:16px 20px;margin-bottom:20px;}
+.pay-packages{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
+.pay-pkg{border:1.5px solid var(--border2);border-radius:var(--r-l);padding:16px 10px;text-align:center;cursor:pointer;background:var(--surf2);position:relative;transition:all .18s;}
+.pay-pkg:hover{border-color:var(--coffee);}
+.pay-pkg.sel{border-color:var(--coffee);background:rgba(200,149,108,.07);}
+.pay-pkg-badge{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--coffee),var(--gold));color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:100px;white-space:nowrap;}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.pay-method{border:1.5px solid var(--border2);border-radius:var(--r-m);padding:13px 8px;text-align:center;cursor:pointer;background:var(--surf2);transition:all .18s;}
+.pay-method:hover{border-color:var(--a);}
+.pay-method.sel{border-color:var(--a);background:var(--a-dim);}
+.pay-confirm-box{background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r-l);padding:14px 16px;margin-bottom:16px;}
+.pay-confirm-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--t2);padding:4px 0;}
+.pay-confirm-row.total{font-size:14px;font-weight:700;color:var(--t);border-top:1px solid var(--border);margin-top:6px;padding-top:10px;}
+.pay-btn{width:100%;padding:13px;border-radius:var(--r-m);font-size:14px;font-weight:800;background:linear-gradient(135deg,var(--coffee),var(--gold));color:#fff;border:none;box-shadow:0 4px 18px var(--coffee-glow);cursor:pointer;transition:all .18s;font-family:inherit;}
+.pay-btn:hover{filter:brightness(1.07);}
+.pay-success{text-align:center;padding:24px 0;}
+.pay-success-icon{font-size:56px;animation:popIn .4s var(--ease);}
+@keyframes popIn{from{transform:scale(.6);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+/* ══ LOGIN PAGE ══ */
+#login-page{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.88);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .22s;}
+#login-page.open{opacity:1;pointer-events:all;}
+.login-card{background:var(--surf);border:1px solid var(--border2);border-radius:24px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,.7);position:relative;}
+.login-tabs{display:flex;background:var(--surf2);border-radius:var(--r-m);padding:3px;margin-bottom:24px;}
+.login-tab{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;border:none;background:transparent;color:var(--t2);cursor:pointer;transition:all .18s;font-family:inherit;}
+.login-tab.active{background:var(--a);color:#fff;}
+.social-btn{width:100%;padding:11px 16px;border-radius:var(--r-m);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;border:1px solid var(--border2);background:var(--surf2);color:var(--t);cursor:pointer;transition:all .18s;font-family:inherit;margin-bottom:8px;}
+.social-btn:hover{border-color:var(--a);}
+.social-btn-icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.social-btn.google .social-btn-icon{background:#fff;}
+.social-btn.naver .social-btn-icon{background:#03c75a;color:#fff;font-weight:900;font-size:13px;}
+.social-btn.kakao .social-btn-icon{background:#fee500;font-size:14px;}
+.login-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--t3);font-size:11px;}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border2);}
+.pw-wrap{position:relative;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--t3);cursor:pointer;font-size:15px;padding:0;}
+.login-btn{width:100%;padding:12px;border-radius:var(--r-m);font-size:14px;font-weight:800;background:linear-gradient(135deg,var(--a),#8b7fff);color:#fff;border:none;box-shadow:var(--shadow-a);cursor:pointer;transition:all .18s;font-family:inherit;margin-top:14px;}
+.login-btn:hover{filter:brightness(1.1);}
+.signup-gift{display:flex;align-items:center;gap:10px;padding:11px 14px;background:rgba(200,149,108,.07);border:1px solid rgba(200,149,108,.2);border-radius:var(--r-m);font-size:12px;color:var(--t2);margin-bottom:16px;}
+.login-terms{font-size:10px;color:var(--t3);text-align:center;margin-top:12px;line-height:1.6;}
+
+footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;color:var(--t3);font-size:12px;z-index:1;position:relative;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:5px;}
+@media(max-width:640px){
+  nav{padding:0 16px;}
+  .nav-center{display:none;}
+  .stats-row{flex-direction:column;}
+  .stat-item{border-right:none;border-bottom:1px solid var(--border);padding:14px 20px;}
+  .stat-item:last-child{border-bottom:none;}
+  .career-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="smoothScroll('top')">패스<span class="dot">커넥션</span></div>
+  <div class="nav-center">
+    <button class="nav-tab active" onclick="smoothScroll('mentors')">멘토 찾기</button>
+    <button class="nav-tab" onclick="smoothScroll('how')">이용 방법</button>
+    <button class="nav-tab" onclick="smoothScroll('pricing')">요금제</button>
+  </div>
+  <div class="nav-right" id="nav-right">
+    <button class="nav-icon-btn" onclick="showToast('🔔 새 알림이 없어요')">🔔<span class="notif-dot"></span></button>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('mentor')">멘토 등록</button>
+    <button class="btn btn-primary btn-sm" id="nav-login-btn" onclick="openLoginPage('login')">로그인</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-glow glow-1"></div><div class="hero-glow glow-2"></div><div class="hero-glow glow-3"></div>
+  <div class="hero-eyebrow"><span class="eyebrow-badge">NEW</span><span class="pulse-dot"></span><span>현재 247명의 합격자가 활동 중</span></div>
+  <div class="hero-kicker">취업 인맥의 새로운 방법</div>
+  <h1 class="hero-title"><span class="hl">인맥을 만들어봐!</span></h1>
+  <p class="hero-tagline">합격자가 널 도와줄 거야.</p>
+  <p class="hero-sub">패스커넥션에서 삼성, 카카오, 네이버 합격자와<br>직접 1:1 커피챗하고 합격 루트를 압축하세요.</p>
+  <div class="hero-cta">
+    <button class="btn btn-filled btn-lg" onclick="smoothScroll('mentors')">멘토 둘러보기 →</button>
+    <button class="btn btn-ghost btn-lg" onclick="openModal('mentor')">합격 경험 팔기</button>
+  </div>
+  <div class="hero-token-badge" onclick="openModal('payment')" title="커피챗 토큰 충전">
+    <svg class="hero-token-img" id="hero-token-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--coffee);">☕ 커피챗 토큰</div>
+      <div style="font-size:11px;color:var(--t2);">지금 충전하고 합격자를 만나요</div>
+    </div>
+    <div style="font-size:11px;color:var(--coffee);font-weight:700;background:rgba(200,149,108,.12);padding:4px 10px;border-radius:100px;">충전 →</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-n">247+</div><div class="stat-l">합격자 멘토</div></div>
+    <div class="stat-item"><div class="stat-n">1,840+</div><div class="stat-l">취준생 회원</div></div>
+    <div class="stat-item"><div class="stat-n">4.9★</div><div class="stat-l">평균 만족도</div></div>
+    <div class="stat-item"><div class="stat-n">89%</div><div class="stat-l">커피챗 후 합격</div></div>
+  </div>
+</div>
+
+<!-- HOW -->
+<div class="section" id="how">
+  <div class="sec-eyebrow">HOW IT WORKS</div>
+  <div class="sec-title">3단계로 끝나는 취업 인맥</div>
+  <div class="sec-sub">기존엔 인맥 있는 사람만 알 수 있었던 정보. 이제 누구나 접근할 수 있어요.</div>
+  <div class="steps-grid">
+    <div class="step-card"><div class="step-n">01</div><div class="step-title">원하는 기업·직무 검색</div><div class="step-desc">삼성전자 반도체, 카카오 개발, 네이버 마케팅… 원하는 합격자를 필터로 찾아보세요.</div></div>
+    <div class="step-card"><div class="step-n">02</div><div class="step-title">커피챗 또는 후기 열람</div><div class="step-desc">30분 1:1 화상 커피챗을 예약하거나, 합격자가 작성한 면접 후기를 즉시 확인하세요.</div></div>
+    <div class="step-card"><div class="step-n">03</div><div class="step-title">합격으로 가는 지름길</div><div class="step-desc">실제 면접 질문, 준비 방법, 조직문화까지. 인터넷에 없는 진짜 정보를 얻으세요.</div></div>
+  </div>
+</div>
+
+<!-- TRUST -->
+<div class="section">
+  <div class="sec-eyebrow">TRUST & SAFETY</div>
+  <div class="sec-title">검증된 합격자만 활동해요</div>
+  <div class="sec-sub">허위 정보 없이 3단계 인증으로 신뢰를 보장해요.</div>
+  <div class="trust-grid">
+    <div class="trust-card"><div class="trust-icon">🥉</div><div class="trust-tier" style="color:var(--bronze)">기본 인증</div><div class="trust-desc">합격 통보 이메일 또는 오퍼레터 제출. 운영자 수동 검토 후 승인.</div></div>
+    <div class="trust-card"><div class="trust-icon">🥈</div><div class="trust-tier" style="color:var(--silver)">검증 인증</div><div class="trust-desc">링크드인 프로필 연동으로 재직 정보 자동 확인.</div></div>
+    <div class="trust-card"><div class="trust-icon">🥇</div><div class="trust-tier" style="color:var(--gold)">프리미엄 인증</div><div class="trust-desc">회사 이메일(@samsung.com 등) 인증 코드. 위조 불가능.</div></div>
+  </div>
+</div>
+
+<!-- MENTORS -->
+<div class="section" id="mentors">
+  <div class="sec-eyebrow">MENTORS</div>
+  <div class="sec-title">지금 활동 중인 합격자들</div>
+  <div class="mentor-controls">
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="search-q" placeholder="기업명, 직무, 이름으로 검색..." oninput="handleSearch()">
+    </div>
+    <select class="sort-select" id="sort-sel" onchange="handleSearch()">
+      <option value="rating">평점 높은 순</option>
+      <option value="price_low">가격 낮은 순</option>
+      <option value="price_high">가격 높은 순</option>
+      <option value="recent">최근 합격 순</option>
+    </select>
+  </div>
+  <div class="pill-tabs">
+    <button class="pill-tab active" onclick="filterMentors('all',this)">전체</button>
+    <button class="pill-tab" onclick="filterMentors('it',this)">IT / 개발</button>
+    <button class="pill-tab" onclick="filterMentors('finance',this)">금융</button>
+    <button class="pill-tab" onclick="filterMentors('large',this)">대기업</button>
+    <button class="pill-tab" onclick="filterMentors('saved',this)">⭐ 저장됨</button>
+  </div>
+  <div id="mentors-grid" class="mentors-grid"></div>
+</div>
+
+<!-- PRICING -->
+<div class="section" id="pricing" style="text-align:center;">
+  <div class="sec-eyebrow">PRICING</div>
+  <div class="sec-title">합리적인 가격으로 시작하세요</div>
+  <div class="sec-sub" style="margin:0 auto 44px;">처음엔 무료로 시작하고, 필요할 때 업그레이드하세요.</div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="plan-name">무료</div><div class="plan-price">₩0</div><div class="plan-period">영원히 무료</div>
+      <ul class="plan-feats"><li>합격자 프로필 열람</li><li>무제한 후기 열람</li><li>커뮤니티 참여</li><li>1:1 커피챗 예약</li><li class="off">AI 서류 분석</li></ul>
+      <button class="plan-btn outline" onclick="openModal('signup')">무료로 시작</button>
+    </div>
+    <div class="price-card feat">
+      <div class="feat-badge">가장 인기</div>
+      <div class="plan-name">프리미엄</div><div class="plan-price">₩9,900<small>/월</small></div><div class="plan-period">첫 달 무료 체험</div>
+      <ul class="plan-feats"><li>합격자 프로필 열람</li><li>무제한 후기 열람</li><li>커뮤니티 참여</li><li>1:1 커피챗 예약</li><li>AI 서류 분석 무제한</li></ul>
+      <button class="plan-btn filled" onclick="openModal('signup')">무료로 체험하기</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p style="font-weight:700;margin-bottom:4px;">패스<span style="color:var(--a)">커넥션</span></p>
+  <p>© 2025 · 취준생과 합격자를 잇다 · made with ❤️</p>
+</footer>
+
+<!-- ═══ MODAL: SIGNUP ═══ -->
+<div class="overlay" id="modal-signup">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="closeModal('signup')">✕</button>
+    <div class="modal-title">무료로 시작하기 🚀</div>
+    <div class="modal-sub">합격자 후기와 1:1 커피챗, 지금 바로 시작하세요.</div>
+    <div class="mform">
+      <div><label>이름</label><input class="finput" id="su-name" placeholder="홍길동"></div>
+      <div><label>이메일</label><input class="finput" id="su-email" type="email" placeholder="hong@email.com"></div>
+      <div><label>나는</label>
+        <select class="finput" id="su-type"><option value="">선택해주세요</option><option>취준생 (구직 중)</option><option>합격자 (멘토 등록)</option><option>재직자 (멘토 등록)</option></select>
+      </div>
+      <div><label>목표 기업</label><input class="finput" id="su-target" placeholder="예: 삼성전자, 카카오"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="plan-btn outline" onclick="closeModal('signup')">취소</button>
+      <button class="plan-btn filled" onclick="submitSignup()">가입하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: MENTOR REGISTER ═══ -->
+<div class="overlay" id="modal-mentor">
+  <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto;padding:24px;">
+    <button class="modal-close" onclick="closeModal('mentor')">✕</button>
+    <div id="m-s1">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="modal-title" style="margin:0;">합격 경험 등록하기</div>
+        <span id="ftab-label" style="font-size:10px;color:var(--t3);font-weight:600;">1 / 3</span>
+      </div>
+      <div class="modal-sub">당신의 합격 경험을 수익으로 바꾸세요.</div>
+      <div class="ftabs">
+        <button class="ftab active" id="ft1" onclick="switchTab(1)">기본 정보</button>
+        <button class="ftab" id="ft2" onclick="switchTab(2)">경력 · 소개</button>
+        <button class="ftab" id="ft3" onclick="switchTab(3)">미디어 · 링크</button>
+      </div>
+
+      <!-- TAB 1 -->
+      <div id="fp1">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+          <div id="photo-preview" style="width:72px;height:72px;border-radius:50%;border:2px dashed var(--border2);background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden;cursor:pointer;" onclick="document.getElementById('photo-input').click()">📷</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px;">프로필 사진</div>
+            <div style="font-size:11px;color:var(--t2);margin-bottom:8px;">실제 사진이 있으면 신뢰도가 높아져요</div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('photo-input').click()">업로드</button>
+            <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="previewPhoto(this)">
+          </div>
+        </div>
+        <div class="mform">
+          <div><label>이름</label><input class="finput" id="m-name" placeholder="홍길동"></div>
+          <div class="modal-row">
+            <div style="flex:1"><label>합격 기업</label><input class="finput" id="m-company" placeholder="삼성전자"></div>
+            <div style="flex:1"><label>합격 연도</label>
+              <select class="finput" id="m-year"><option value="">연도 선택</option><option>2025년</option><option>2024년</option><option>2023년</option><option>2022년</option></select>
+            </div>
+          </div>
+          <div><label>직무</label><input class="finput" id="m-role" placeholder="예: 반도체 공정 엔지니어"></div>
+          <div><label>커피챗 가격 (원)</label><input class="finput" type="number" id="m-price" placeholder="20000"></div>
+          <div><label>도움 줄 수 있는 것</label><input class="finput" id="m-help" placeholder="예: 코테, 자소서, 면접 (쉼표로 구분)"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: 경력 · 소개 -->
+      <div id="fp2" style="display:none;">
+        <div class="mform">
+          <div>
+            <label>자기소개</label>
+            <textarea class="finput" id="m-bio" rows="4" placeholder="나를 소개하는 글을 자유롭게 써주세요.&#10;예) 비전공자로 2번 도전 끝에 삼성전자 DS부문 합격했어요..." style="resize:vertical;line-height:1.7;"></textarea>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <label style="margin:0;">경력 · 학력 · 수상</label>
+              <button type="button" onclick="addCareerRow()" class="btn btn-ghost btn-sm" style="font-size:11px;padding:4px 10px;">+ 항목 추가</button>
+            </div>
+            <!-- 컬럼 헤더 -->
+            <div style="display:grid;grid-template-columns:100px 90px 1fr 28px;gap:6px;padding:0 10px;margin-bottom:4px;">
+              <span style="font-size:10px;color:var(--t3);font-weight:700;">종류</span>
+              <span style="font-size:10px;color:var(--t3);font-weight:700;">기간</span>
+              <span style="font-size:10px;color:var(--t3);font-weight:700;">내용</span>
+              <span></span>
+            </div>
+            <div id="career-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+            <div style="font-size:10px;color:var(--t3);margin-top:6px;line-height:1.7;">
+              💡 예시) 대학교 | 2019~2023 | 서울대학교 컴퓨터공학과 (부전공: 경제학)
+            </div>
+          </div>
+          <div><label>자격증 · 스킬</label><input class="finput" id="m-skills" placeholder="예: 정보처리기사, Python, Spring Boot, 토익 870"></div>
+        </div>
+      </div>
+
+      <!-- TAB 3: 미디어 · 링크 -->
+      <div id="fp3" style="display:none;">
+        <!-- 활동 사진 -->
+        <div style="margin-bottom:18px;">
+          <label class="flabel">📸 활동 사진 (최대 6장)</label>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:8px;">합격 인증샷, 면접장 사진 등을 올리면 신뢰도가 높아져요.</div>
+          <div class="photo-grid" id="media-photo-grid"></div>
+          <label class="upload-zone">사진 추가 (JPG, PNG)<input type="file" id="media-photo-input" accept="image/*" multiple style="display:none;" onchange="addMediaPhotos(this)"></label>
+        </div>
+
+        <!-- 활동 영상 링크 -->
+        <div style="margin-bottom:18px;">
+          <label class="flabel">🎥 활동 영상 링크</label>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:8px;">유튜브, 인스타그램 릴스 등 영상 URL을 입력하세요.</div>
+          <div id="video-link-list"></div>
+          <button type="button" onclick="addVideoLinkRow()" class="upload-zone" style="border-style:dashed;background:transparent;">+ 영상 링크 추가</button>
+        </div>
+
+        <!-- 외부 링크 (타 웹사이트) -->
+        <div style="margin-bottom:18px;">
+          <label class="flabel">🔗 외부 링크 (타 웹사이트)</label>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:8px;">블로그, 노션, 깃허브, 링크드인 등 소개하고 싶은 사이트를 링크하세요.</div>
+          <div id="ext-link-list"></div>
+          <button type="button" onclick="addExtLinkRow()" class="upload-zone" style="border-style:dashed;background:transparent;">+ 외부 링크 추가</button>
+        </div>
+
+        <!-- 파일 영상 업로드 -->
+        <div>
+          <label class="flabel">📁 영상 파일 직접 업로드</label>
+          <div id="video-file-list"></div>
+          <label class="upload-zone">영상 파일 선택 (MP4, MOV)<input type="file" id="video-file-input" accept="video/*" multiple style="display:none;" onchange="addVideoFiles(this)"></label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="plan-btn outline" onclick="closeModal('mentor')">취소</button>
+        <button class="plan-btn filled" onclick="goVerify()">다음: 인증 →</button>
+      </div>
+    </div><!-- /m-s1 -->
+
+    <!-- STEP 2: 인증 -->
+    <div id="m-s2" style="display:none;">
+      <div class="modal-title">신원 인증하기</div>
+      <div class="modal-sub">인증 등급이 높을수록 더 많이 노출되고 신뢰를 얻어요.</div>
+      <div id="opt-email" class="v-opt" onclick="selectVerify('email')">
+        <span class="v-opt-icon">📧</span>
+        <div><div class="v-opt-title">회사 이메일 인증 <span class="vbadge gold">🥇 프리미엄</span></div><div class="v-opt-sub">@samsung.com 등 회사 메일로 인증 코드 발송</div></div>
+      </div>
+      <div id="opt-linkedin" class="v-opt" onclick="selectVerify('linkedin')">
+        <span class="v-opt-icon">🔗</span>
+        <div><div class="v-opt-title">링크드인 연동 <span class="vbadge silver">🥈 검증</span></div><div class="v-opt-sub">링크드인 프로필 재직 정보 자동 확인</div></div>
+      </div>
+      <div id="opt-doc" class="v-opt" onclick="selectVerify('doc')">
+        <span class="v-opt-icon">📄</span>
+        <div><div class="v-opt-title">서류 제출 <span class="vbadge bronze">🥉 기본</span></div><div class="v-opt-sub">합격 통보 메일 스크린샷 또는 오퍼레터</div></div>
+      </div>
+      <div id="verify-email-area" style="display:none;background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r-l);padding:14px;margin-top:4px;margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--t2);margin-bottom:9px;">회사 이메일 주소를 입력하면 인증 코드를 보내드려요.</div>
+        <div style="display:flex;gap:7px;"><input class="finput" id="company-email" placeholder="example@samsung.com"><button class="btn btn-filled btn-sm" onclick="sendCode()" style="white-space:nowrap;">코드 발송</button></div>
+        <div id="code-area" style="display:none;margin-top:9px;">
+          <div style="font-size:11px;color:var(--a3);margin-bottom:7px;">✅ 인증 코드를 발송했어요!</div>
+          <div style="display:flex;gap:7px;"><input class="finput" id="verify-code" placeholder="인증 코드 6자리" style="letter-spacing:4px;"><button class="btn btn-filled btn-sm" onclick="confirmCode()" style="white-space:nowrap;">확인</button></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="plan-btn outline" onclick="backToStep1()">← 이전</button>
+        <button class="plan-btn filled" onclick="submitMentor()">등록 완료 🎉</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROFILE PAGE ═══ -->
+<div id="profile-page">
+  <div class="pp-topbar">
+    <div class="pp-topbar-left">
+      <button class="pp-back" onclick="closeProfile()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>목록으로
+      </button>
+      <div class="logo" style="font-size:15px;">패스<span class="dot">커넥션</span></div>
+    </div>
+    <div class="pp-topbar-right">
+      <button class="nav-icon-btn" id="pp-star-btn" onclick="toggleSaveFromProfile()" title="저장">☆</button>
+      <button class="nav-icon-btn" id="pp-share-btn">🔗</button>
+    </div>
+  </div>
+
+  <div class="pp-wrap">
+    <!-- LEFT -->
+    <div class="pp-left">
+      <div class="pp-card">
+        <div class="pp-cover"><div class="pp-cover-bg" id="pp-cover-bg"></div></div>
+        <div class="pp-card-body">
+          <div class="pp-av-row">
+            <div class="pp-av" id="pp-av"></div>
+            <div class="pp-av-actions">
+              <button class="btn btn-filled btn-sm" id="pp-chat-btn">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>채팅 시작
+              </button>
+              <button class="btn btn-outline btn-sm" id="pp-book-btn">커피챗 예약</button>
+            </div>
+          </div>
+          <div class="pp-name"><span id="pp-name"></span><span id="pp-badge"></span></div>
+          <div id="pp-headline" class="pp-headline"></div>
+          <div class="pp-location">📍 <span id="pp-loc-text"></span></div>
+          <div class="pp-metrics-row">
+            <div class="pp-metric"><div class="pp-metric-n" id="pp-m-chats">0</div><div class="pp-metric-l">커피챗</div></div>
+            <div class="pp-metric"><div class="pp-metric-n" id="pp-m-rating">—</div><div class="pp-metric-l">평점</div></div>
+            <div class="pp-metric"><div class="pp-metric-n" id="pp-m-resp">98%</div><div class="pp-metric-l">응답률</div></div>
+            <div class="pp-metric"><div class="pp-metric-n" id="pp-m-reviews">0</div><div class="pp-metric-l">후기</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="pp-sec" id="pp-bio-sec"><div class="pp-sec-hd"><span class="pp-sec-hd-left">소개</span></div><p id="pp-bio" style="font-size:13.5px;color:var(--t2);line-height:1.9;white-space:pre-wrap;"></p></div>
+      <div class="pp-sec" id="pp-help-sec"><div class="pp-sec-hd"><span class="pp-sec-hd-left">💡 도움 드릴 수 있어요</span></div><div class="chips" id="pp-help-tags"></div></div>
+
+      <!-- 경력 섹션 -->
+      <div class="pp-sec" id="pp-career-sec">
+        <div class="pp-sec-hd">
+          <span class="pp-sec-hd-left">🏅 경력 · 학력 · 수상</span>
+        </div>
+        <div id="pp-career-list"></div>
+      </div>
+
+      <div class="pp-sec" id="pp-skills-sec"><div class="pp-sec-hd"><span class="pp-sec-hd-left">🛠️ 스킬 · 자격증</span></div><div class="chips" id="pp-skills-tags"></div></div>
+
+      <!-- 활동 사진 섹션 -->
+      <div class="pp-sec" id="pp-media-sec">
+        <div class="pp-sec-hd"><span class="pp-sec-hd-left">📸 활동 사진</span></div>
+        <div class="pp-media-grid" id="pp-media-grid"></div>
+      </div>
+
+      <!-- 영상 + 외부 링크 통합 섹션 -->
+      <div class="pp-sec" id="pp-links-sec">
+        <div class="pp-sec-hd"><span class="pp-sec-hd-left">🔗 활동 영상 &amp; 링크</span></div>
+        <div id="pp-links-list"></div>
+      </div>
+
+      <div class="pp-sec" id="pp-review-sec"><div class="pp-sec-hd"><span class="pp-sec-hd-left">⭐ 커피챗 후기</span></div><div id="pp-review-list"></div></div>
+    </div>
+
+    <!-- RIGHT sidebar -->
+    <div class="pp-right">
+      <div class="pp-sidebar-card">
+        <div class="sidebar-price" id="pp-price"></div>
+        <div class="sidebar-price-sub">30분 · 1:1 화상 커피챗</div>
+        <button class="btn btn-filled" style="width:100%;justify-content:center;padding:11px;" id="pp-book-btn2">커피챗 예약하기</button>
+        <div class="sidebar-divider"></div>
+        <button class="btn btn-outline" style="width:100%;justify-content:center;padding:11px;" id="pp-chat-btn2">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>채팅 보내기
+        </button>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-detail">⚡ <span>평균 응답 시간 <strong>2시간 이내</strong></span></div>
+        <div class="sidebar-detail">📅 <span>주 5일 이상 활동</span></div>
+        <div class="sidebar-detail">🔒 <span>안전 거래 보장</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CHAT PANEL ═══ -->
+<div id="chat-panel">
+  <div class="chat-topbar">
+    <button class="pp-back" onclick="closeChat()">
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="chat-av" id="chat-av"></div>
+    <div class="chat-info"><div class="chat-name" id="chat-name">멘토</div><div class="chat-status" id="chat-status">● 온라인</div></div>
+    <div style="display:flex;gap:8px;">
+      <button class="nav-icon-btn" onclick="showToast('📞 화상통화는 커피챗 예약 후 이용 가능해요')">📞</button>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-area">
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chat-input" placeholder="메시지를 입력하세요..." rows="1"
+        oninput="autoResize(this)"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+      <button class="chat-send" onclick="sendMsg()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+    <div class="chat-hint">Enter로 전송 · Shift+Enter 줄바꿈</div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="modal-payment">
+  <div class="modal" style="max-width:480px;max-height:90vh;overflow-y:auto;" id="pay-main">
+    <button class="modal-close" onclick="closeModal('payment')">✕</button>
+    <div class="modal-title">☕ 커피챗 토큰 충전</div>
+    <div class="modal-sub">토큰 1개 = 합격자와 1회 커피챗</div>
+
+    <div class="pay-token-header">
+      <svg id="pay-token-svg" style="width:52px;height:52px;flex-shrink:0;" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div>
+        <div style="font-size:13px;color:var(--t2);margin-bottom:3px;">현재 보유 토큰</div>
+        <div style="font-size:22px;font-weight:800;color:var(--coffee);" id="pay-cur-coins">0개</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;">패키지 선택</div>
+    <div class="pay-packages">
+      <div class="pay-pkg" id="pkg-1" onclick="selectPkg(this,1,13000,0)">
+        <div style="font-size:22px;font-weight:800;color:var(--coffee);">1개</div>
+        <div style="font-size:11px;color:var(--t3);margin:4px 0;">보너스 없음</div>
+        <div style="font-size:15px;font-weight:700;">₩13,000</div>
+      </div>
+      <div class="pay-pkg sel" id="pkg-3" onclick="selectPkg(this,3,36000,3)">
+        <div class="pay-pkg-badge">🔥 인기</div>
+        <div style="font-size:22px;font-weight:800;color:var(--coffee);">3개</div>
+        <div style="font-size:11px;color:var(--a3);margin:4px 0;">+10% 보너스</div>
+        <div style="font-size:15px;font-weight:700;">₩36,000</div>
+      </div>
+      <div class="pay-pkg" id="pkg-6" onclick="selectPkg(this,6,65000,6)">
+        <div class="pay-pkg-badge" style="background:linear-gradient(135deg,var(--a),var(--a2));">💎 최저가</div>
+        <div style="font-size:22px;font-weight:800;color:var(--coffee);">6개</div>
+        <div style="font-size:11px;color:var(--a3);margin:4px 0;">+30% 보너스</div>
+        <div style="font-size:15px;font-weight:700;">₩65,000</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;">결제 수단</div>
+    <div class="pay-methods">
+      <div class="pay-method sel" id="pm-naver" onclick="selectPayMethod(this,'naver')">
+        <div style="font-size:18px;">🟢</div>
+        <div style="font-size:12px;font-weight:700;margin-top:4px;">네이버페이</div>
+      </div>
+      <div class="pay-method" id="pm-toss" onclick="selectPayMethod(this,'toss')">
+        <div style="font-size:18px;">💙</div>
+        <div style="font-size:12px;font-weight:700;margin-top:4px;">토스뱅크</div>
+      </div>
+      <div class="pay-method" id="pm-card" onclick="selectPayMethod(this,'card')">
+        <div style="font-size:18px;">💳</div>
+        <div style="font-size:12px;font-weight:700;margin-top:4px;">신용·체크카드</div>
+      </div>
+      <div class="pay-method" id="pm-bank" onclick="selectPayMethod(this,'bank')">
+        <div style="font-size:18px;">🏦</div>
+        <div style="font-size:12px;font-weight:700;margin-top:4px;">인터넷뱅킹</div>
+      </div>
+    </div>
+
+    <div class="pay-confirm-box">
+      <div class="pay-confirm-row"><span>선택 패키지</span><span id="pc-pkg">3개</span></div>
+      <div class="pay-confirm-row"><span>결제 수단</span><span id="pc-method">네이버페이</span></div>
+      <div class="pay-confirm-row total"><span>결제 금액</span><span id="pc-price" style="color:var(--coffee);">₩36,000</span></div>
+      <div class="pay-confirm-row"><span style="font-size:11px;color:var(--a3);">충전 후 보유</span><span id="pc-after" style="font-size:11px;color:var(--a3);">3개</span></div>
+    </div>
+
+    <button class="pay-btn" onclick="processPayment()" id="pay-submit-btn">결제하고 토큰 충전하기 ☕</button>
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-size:10px;color:var(--t3);">🔒 SSL 암호화 · KG이니시스 안전결제</div>
+  </div>
+
+  <!-- 결제 성공 화면 -->
+  <div class="modal" style="max-width:380px;display:none;" id="pay-success">
+    <div class="pay-success">
+      <div class="pay-success-icon">☕</div>
+      <div style="font-size:22px;font-weight:800;margin:16px 0 8px;">충전 완료!</div>
+      <div style="font-size:14px;color:var(--t2);margin-bottom:20px;">현재 보유 토큰: <strong id="ps-coins" style="color:var(--coffee);">0개</strong></div>
+      <button class="btn btn-filled" style="width:100%;justify-content:center;padding:12px;" onclick="closeModal('payment');document.getElementById('pay-main').style.display='';document.getElementById('pay-success').style.display='none';">합격자 만나러 가기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="login-card">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:22px;font-weight:800;">패스<span style="color:var(--a);">커넥션</span></div>
+      <div style="font-size:12px;color:var(--t3);margin-top:4px;">합격자와 취준생을 잇다</div>
+    </div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="ltab-login" onclick="switchLoginTab('login')">로그인</button>
+      <button class="login-tab" id="ltab-signup" onclick="switchLoginTab('signup')">회원가입</button>
+    </div>
+
+    <!-- 로그인 패널 -->
+    <div id="lpanel-login">
+      <button class="social-btn google" onclick="socialLogin('google')">
+        <span class="social-btn-icon"><svg width="16" height="16" viewBox="0 0 18 18"><path d="M17.64 9.2a9 9 0 00-.14-1.6H9v3.02h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.92A8.78 8.78 0 0017.64 9.2z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26a5.4 5.4 0 01-8.07-2.85H.96v2.33A9 9 0 009 18z" fill="#34A853"/><path d="M3.96 10.71A5.41 5.41 0 013.96 7.29V4.96H.96a9 9 0 000 8.08l3-2.33z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 00.96 4.96l3 2.33C4.74 5.08 6.68 3.58 9 3.58z" fill="#EA4335"/></svg></span>
+        Google로 로그인
+      </button>
+      <button class="social-btn naver" onclick="socialLogin('naver')">
+        <span class="social-btn-icon">N</span>
+        네이버로 로그인
+      </button>
+      <button class="social-btn kakao" onclick="socialLogin('kakao')">
+        <span class="social-btn-icon">💬</span>
+        카카오로 로그인
+      </button>
+      <div class="login-divider">또는 이메일로</div>
+      <div class="mform" style="gap:8px;">
+        <input class="finput" id="l-email" type="email" placeholder="이메일">
+        <div class="pw-wrap">
+          <input class="finput" id="l-pw" type="password" placeholder="비밀번호" style="width:100%;">
+          <button class="pw-eye" onclick="togglePw('l-pw',this)">👁</button>
+        </div>
+      </div>
+      <button class="login-btn" onclick="submitLogin()">로그인</button>
+      <div class="login-terms">가입하면 <u>이용약관</u> 및 <u>개인정보처리방침</u>에 동의하는 것으로 간주됩니다.</div>
+    </div>
+
+    <!-- 회원가입 패널 -->
+    <div id="lpanel-signup" style="display:none;">
+      <div class="signup-gift">🎁 <div>지금 가입하면 <strong style="color:var(--coffee);">☕ 커피챗 토큰 1개</strong>를 무료로 드려요!</div></div>
+      <button class="social-btn google" onclick="socialLogin('google')">
+        <span class="social-btn-icon"><svg width="16" height="16" viewBox="0 0 18 18"><path d="M17.64 9.2a9 9 0 00-.14-1.6H9v3.02h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.92A8.78 8.78 0 0017.64 9.2z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26a5.4 5.4 0 01-8.07-2.85H.96v2.33A9 9 0 009 18z" fill="#34A853"/><path d="M3.96 10.71A5.41 5.41 0 013.96 7.29V4.96H.96a9 9 0 000 8.08l3-2.33z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 00.96 4.96l3 2.33C4.74 5.08 6.68 3.58 9 3.58z" fill="#EA4335"/></svg></span>
+        Google로 가입
+      </button>
+      <button class="social-btn naver" onclick="socialLogin('naver')">
+        <span class="social-btn-icon">N</span>
+        네이버로 가입
+      </button>
+      <button class="social-btn kakao" onclick="socialLogin('kakao')">
+        <span class="social-btn-icon">💬</span>
+        카카오로 가입
+      </button>
+      <div class="login-divider">또는 직접 가입</div>
+      <div class="mform" style="gap:8px;">
+        <input class="finput" id="s-name" placeholder="이름">
+        <input class="finput" id="s-email" type="email" placeholder="이메일">
+        <div class="pw-wrap">
+          <input class="finput" id="s-pw" type="password" placeholder="비밀번호 (8자 이상)" style="width:100%;">
+          <button class="pw-eye" onclick="togglePw('s-pw',this)">👁</button>
+        </div>
+        <div>
+          <div style="display:flex;gap:6px;">
+            <input class="finput" id="s-phone" placeholder="전화번호 (예: 01012345678)" style="flex:1;">
+            <button type="button" onclick="sendSmsCode()" style="padding:10px 12px;border-radius:var(--r-m);background:var(--a);color:#fff;border:none;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:inherit;">인증문자</button>
+          </div>
+          <div id="sms-verify-area" style="display:none;margin-top:6px;">
+            <div style="display:flex;gap:6px;">
+              <input class="finput" id="s-sms-code" placeholder="인증번호 6자리" style="flex:1;letter-spacing:3px;" maxlength="6">
+              <button type="button" onclick="verifySmsCode()" style="padding:10px 12px;border-radius:var(--r-m);background:var(--surf2);color:var(--t);border:1px solid var(--border2);font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:inherit;">확인</button>
+            </div>
+          </div>
+        </div>
+        <select class="finput" id="s-type">
+          <option value="">나는...</option>
+          <option>취준생</option>
+          <option>합격자</option>
+          <option>재직자</option>
+        </select>
+        <input class="finput" id="s-target" placeholder="목표 기업 (선택)">
+      </div>
+      <button class="login-btn" onclick="submitSignupNew()">가입하기 🎉</button>
+      <div class="login-terms">가입하면 <u>이용약관</u> 및 <u>개인정보처리방침</u>에 동의하는 것으로 간주됩니다.</div>
+    </div>
+
+    <button onclick="closeLoginPage()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let mentorsData    = [];
+let filtered       = [];
+let activeCategory = 'all';
+let mentorPhotoUrl = null;
+let selectedVerify = null;
+let careerRows     = [];
+let mediaPhotos    = [];
+let videoLinkRows  = [];
+let extLinkRows    = [];
+let videoFiles     = [];
+let savedIds       = JSON.parse(localStorage.getItem('pc_saved')||'[]');
+let currentMentor  = null;
+let currentChat    = null;
+let chatHistories  = {};
+
+const CAREER_TYPES = {
+  edu:    {label:'대학교',    icon:'🎓', cls:'edu'},
+  work:   {label:'직장',     icon:'💼', cls:'work'},
+  intern: {label:'인턴',     icon:'🌱', cls:'intern'},
+  award:  {label:'수상',     icon:'🏆', cls:'award'},
+  cert:   {label:'자격증',   icon:'📜', cls:'cert'},
+  act:    {label:'대외활동', icon:'🌐', cls:'intern'},
+};
+const COLORS = [
+  'linear-gradient(135deg,#6c63ff,#9b59b6)',
+  'linear-gradient(135deg,#ff6584,#ee5a24)',
+  'linear-gradient(135deg,#43e97b,#00b894)',
+  'linear-gradient(135deg,#f5c842,#e17055)',
+  'linear-gradient(135deg,#4facfe,#0652dd)',
+];
+const BADGE = {
+  gold:  '<span class="vbadge gold">🥇 프리미엄</span>',
+  silver:'<span class="vbadge silver">🥈 검증</span>',
+  bronze:'<span class="vbadge bronze">🥉 기본</span>',
+};
+const BADGE_FULL = {
+  gold:  '<span class="vbadge-full gold">🥇 프리미엄 인증</span>',
+  silver:'<span class="vbadge-full silver">🥈 검증 인증</span>',
+  bronze:'<span class="vbadge-full bronze">🥉 기본 인증</span>',
+};
+const MENTOR_REPLIES = [
+  '안녕하세요! 반갑습니다 😊 어떤 점이 궁금하신가요?',
+  '네, 기꺼이 도와드릴게요! 조금 더 자세히 말씀해 주시겠어요?',
+  '좋은 질문이에요. 제 경험을 바탕으로 말씀드리면...',
+  '저도 취준할 때 그 부분이 막막했는데, 이렇게 해결했어요 👍',
+  '커피챗에서 더 자세히 이야기 나눠요! 일정 잡아드릴게요 📅',
+];
+const SAMPLE_REVIEWS = [
+  {name:'김○○',stars:5,text:'실제 면접 질문을 그대로 공유해줘서 너무 도움이 됐어요. 한 달 뒤에 합격했습니다!',date:'2025.03.12'},
+  {name:'이○○',stars:5,text:'자소서 첨삭부터 최종 면접 준비까지 꼼꼼하게 도와주셨어요. 강추합니다.',date:'2025.02.28'},
+  {name:'박○○',stars:4,text:'코딩테스트 풀이 방향을 알려주셔서 많은 도움이 됐습니다.',date:'2025.02.10'},
+];
+
+function getLinkIcon(url) {
+  if (!url) return '🔗';
+  const u = url.toLowerCase();
+  if (u.includes('youtube.com')||u.includes('youtu.be')) return '▶️';
+  if (u.includes('instagram.com')) return '📸';
+  if (u.includes('github.com'))    return '🐙';
+  if (u.includes('linkedin.com'))  return '💼';
+  if (u.includes('notion.so'))     return '📝';
+  if (u.includes('tistory.com')||u.includes('velog.io')||u.includes('medium.com')) return '✍️';
+  if (u.includes('twitter.com')||u.includes('x.com')) return '🐦';
+  return '🔗';
+}
+function getLinkDomain(url) {
+  try { return new URL(url).hostname.replace('www.',''); } catch { return url; }
+}
+
+function showSkeleton(n=6) {
+  const g = document.getElementById('mentors-grid');
+  g.className = 'skeleton-grid';
+  g.innerHTML = Array.from({length:n},()=>`
+    <div class="skel-card">
+      <div class="skel skel-banner"></div>
+      <div class="skel-body">
+        <div class="skel skel-av"></div>
+        <div class="skel skel-line w80"></div>
+        <div class="skel skel-line w60" style="margin-bottom:14px;"></div>
+        <div class="skel skel-line w80"></div>
+        <div class="skel skel-line w40"></div>
+      </div>
+    </div>`).join('');
+}
+function hideSkeleton() {
+  document.getElementById('mentors-grid').className = 'mentors-grid';
+}
+
+function renderMentors(list) {
+  hideSkeleton();
+  const grid = document.getElementById('mentors-grid');
+  if (!list || !list.length) {
+    const isSaved = activeCategory === 'saved';
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">${isSaved?'⭐':'🔍'}</div>
+      <div class="empty-title">${isSaved?'아직 저장한 멘토가 없어요':'조건에 맞는 멘토가 없어요'}</div>
+      <div class="empty-sub">${isSaved
+        ? '마음에 드는 멘토 카드의 ☆ 버튼을 눌러 저장하세요.'
+        : '첫 번째 합격자 멘토가 되어보세요!'}</div>
+      ${isSaved?'':` <button class="btn btn-filled" onclick="openModal('mentor')">멘토 등록하기 →</button>`}
+    </div>`;
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  list.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'mc';
+    const isSaved = savedIds.includes(m.id);
+    const av = m.photo
+      ? `<img src="${m.photo}" alt="${m.name}">`
+      : `<span style="font-size:24px;font-weight:800;color:#fff;">${m.avatar}</span>`;
+    const skillTags = (m.skills||'').split(',').slice(0,2).map(s=>`<span class="tag">${s.trim()}</span>`).join('');
+    const stars = m.reviews > 0
+      ? `<div class="mc-stars has">★ ${m.rating} <span style="font-weight:400;color:var(--t3);">(${m.reviews})</span></div>`
+      : `<div class="mc-stars">후기 없음</div>`;
+    card.innerHTML = `
+      <div class="mc-clip">
+        <div class="mc-banner">
+          <div class="mc-banner-bg" style="background:${m.avatarBg};"></div>
+          <div class="mc-banner-pattern"></div>
+        </div>
+        <div class="mc-body">
+          <div class="mc-av-row">
+            <div class="mc-av" style="background:${m.avatarBg};">${av}</div>
+            <button class="mc-chat-quick" data-chat="${m.id}">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>채팅
+            </button>
+          </div>
+          <div class="mc-name">${m.name}${BADGE[m.verifyLevel]||''}</div>
+          <div class="mc-sub">${m.role}</div>
+          <div class="mc-loc-line">📍 ${m.company} · ${m.year}년 합격</div>
+          ${m.bio?`<div class="mc-bio">${escHtml(m.bio)}</div>`:''}
+          <div class="mc-tags">${m.tags.map(t=>`<span class="tag">${t}</span>`).join('')}${skillTags}</div>
+          <div class="mc-foot">
+            <div class="mc-price-w">
+              <div class="mc-price">₩${m.price.toLocaleString()} <small>/ 30분</small></div>
+              ${stars}
+            </div>
+            <button class="btn btn-filled btn-sm" data-book="${m.id}" style="border-radius:100px;">예약</button>
+          </div>
+        </div>
+      </div>
+      <button class="mc-star ${isSaved?'saved':''}" data-id="${m.id}">${isSaved?'★':'☆'}</button>`;
+    card.addEventListener('click', e => {
+      const starBtn = e.target.closest('.mc-star');
+      const chatBtn = e.target.closest('[data-chat]');
+      const bookBtn = e.target.closest('[data-book]');
+      if (starBtn) { e.stopPropagation(); toggleSave(m.id, starBtn); return; }
+      if (chatBtn) { e.stopPropagation(); openChat(m.id); return; }
+      if (bookBtn) { e.stopPropagation(); bookMentor(m.name, m.company, m.id); return; }
+      openProfile(m.id);
+    });
+    frag.appendChild(card);
+  });
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+}
+
+let searchTimer = null;
+function handleSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(applyFilters, 120); }
+function applyFilters() {
+  const q    = document.getElementById('search-q').value.toLowerCase().trim();
+  const sort = document.getElementById('sort-sel').value;
+  let base = activeCategory==='saved' ? mentorsData.filter(m=>savedIds.includes(m.id))
+           : activeCategory==='all'   ? [...mentorsData]
+           : mentorsData.filter(m=>m.category===activeCategory);
+  if (q) base = base.filter(m =>
+    m.name.toLowerCase().includes(q)||
+    m.company.toLowerCase().includes(q)||
+    m.role.toLowerCase().includes(q)||
+    m.tags.some(t=>t.toLowerCase().includes(q))
+  );
+  base.sort((a,b)=>
+    sort==='rating'    ?b.rating-a.rating:
+    sort==='price_low' ?a.price-b.price:
+    sort==='price_high'?b.price-a.price:
+    b.year-a.year
+  );
+  filtered = base;
+  renderMentors(filtered);
+}
+function filterMentors(cat, el) {
+  document.querySelectorAll('.pill-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeCategory = cat;
+  applyFilters();
+}
+
+function toggleSave(id, btn) {
+  const idx = savedIds.indexOf(id);
+  if (idx===-1) { savedIds.push(id); btn.classList.add('saved'); btn.textContent='★'; showToast('⭐ 저장했어요!'); }
+  else { savedIds.splice(idx,1); btn.classList.remove('saved'); btn.textContent='☆'; showToast('저장이 취소됐어요.'); }
+  localStorage.setItem('pc_saved',JSON.stringify(savedIds));
+  if (activeCategory==='saved') applyFilters();
+}
+function toggleSaveFromProfile() {
+  if (!currentMentor) return;
+  const btn = document.getElementById('pp-star-btn');
+  const idx = savedIds.indexOf(currentMentor.id);
+  if (idx===-1) { savedIds.push(currentMentor.id); btn.textContent='★'; btn.style.color='var(--gold)'; showToast('⭐ 저장했어요!'); }
+  else { savedIds.splice(idx,1); btn.textContent='☆'; btn.style.color=''; showToast('저장이 취소됐어요.'); }
+  localStorage.setItem('pc_saved',JSON.stringify(savedIds));
+}
+
+function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  document.querySelectorAll('.overlay.open').forEach(el=>el.classList.remove('open'));
+  if(document.getElementById('chat-panel').classList.contains('open')) closeChat();
+  else closeProfile();
+});
+function submitSignup() {
+  const name=document.getElementById('su-name').value.trim();
+  if(!name){showToast('⚠️ 이름을 입력해주세요.');return;}
+  closeModal('signup'); showToast(`🎉 ${name}님, 가입 완료!`);
+}
+
+function switchTab(n) {
+  [1,2,3].forEach(i=>{
+    document.getElementById(`fp${i}`).style.display=i===n?'block':'none';
+    document.getElementById(`ft${i}`).classList.toggle('active',i===n);
+  });
+  document.getElementById('ftab-label').textContent=`${n} / 3`;
+}
+
+function addCareerRow() {
+  const id = Date.now(); careerRows.push(id);
+  const div = document.createElement('div'); div.className='career-row'; div.id=`crow-${id}`;
+  div.innerHTML=`
+    <select class="finput" id="ctype-${id}">
+      <option value="edu">🎓 대학교</option><option value="work">💼 직장</option>
+      <option value="intern">🌱 인턴</option><option value="award">🏆 수상</option>
+      <option value="cert">📜 자격증</option><option value="act">🌐 대외활동</option>
+    </select>
+    <input class="finput" id="cperiod-${id}" placeholder="2019~2023">
+    <input class="finput" id="ccontent-${id}" placeholder="서울대학교 컴퓨터공학과">
+    <button class="del-btn" onclick="removeCareerRow(${id})">✕</button>`;
+  document.getElementById('career-list').appendChild(div);
+}
+function removeCareerRow(id) { document.getElementById(`crow-${id}`)?.remove(); careerRows=careerRows.filter(r=>r!==id); }
+function getCareerData() {
+  return careerRows.map(id=>({
+    type: document.getElementById(`ctype-${id}`)?.value||'work',
+    period: document.getElementById(`cperiod-${id}`)?.value||'',
+    content: document.getElementById(`ccontent-${id}`)?.value||'',
+  })).filter(r=>r.content.trim());
+}
+
+function addMediaPhotos(input) {
+  Array.from(input.files).slice(0,6-mediaPhotos.length).forEach(file=>{
+    const id=`${Date.now()}-${Math.random()}`;
+    const r=new FileReader();
+    r.onload=e=>{mediaPhotos.push({id,url:e.target.result});renderPhotoGrid();};
+    r.readAsDataURL(file);
+  }); input.value='';
+}
+function renderPhotoGrid() {
+  document.getElementById('media-photo-grid').innerHTML = mediaPhotos.map(p=>
+    `<div class="photo-thumb"><img src="${p.url}"><button class="thumb-del" onclick="removePhoto('${p.id}')">✕</button></div>`
+  ).join('');
+}
+function removePhoto(id) { mediaPhotos=mediaPhotos.filter(p=>p.id!==id); renderPhotoGrid(); }
+
+function addVideoLinkRow() {
+  const id=Date.now(); videoLinkRows.push(id);
+  const d=document.createElement('div'); d.className='lrow'; d.id=`vlink-${id}`;
+  d.innerHTML=`<input class="finput lrow-label" id="vl-title-${id}" placeholder="영상 제목"><input class="finput" id="vl-url-${id}" type="url" placeholder="https://youtube.com/..."><button class="del-btn" onclick="removeVideoLink(${id})">✕</button>`;
+  document.getElementById('video-link-list').appendChild(d);
+}
+function removeVideoLink(id) { document.getElementById(`vlink-${id}`)?.remove(); videoLinkRows=videoLinkRows.filter(v=>v!==id); }
+
+function addExtLinkRow() {
+  const id=Date.now(); extLinkRows.push(id);
+  const d=document.createElement('div'); d.className='lrow'; d.id=`elink-${id}`;
+  d.innerHTML=`<input class="finput lrow-label" id="el-title-${id}" placeholder="링크 제목"><input class="finput" id="el-url-${id}" type="url" placeholder="https://github.com/..."><button class="del-btn" onclick="removeExtLink(${id})">✕</button>`;
+  document.getElementById('ext-link-list').appendChild(d);
+}
+function removeExtLink(id) { document.getElementById(`elink-${id}`)?.remove(); extLinkRows=extLinkRows.filter(v=>v!==id); }
+
+function addVideoFiles(input) {
+  Array.from(input.files).forEach(file=>{
+    const id=`${Date.now()}-${Math.random()}`;
+    const size=(file.size/1024/1024).toFixed(1)+'MB';
+    videoFiles.push({id,name:file.name,size});
+    const d=document.createElement('div'); d.className='vfile-item'; d.id=`vfile-${id}`;
+    d.innerHTML=`<span>🎬</span><span class="fname">${escHtml(file.name)}</span><span style="color:var(--t3);font-size:11px;">${size}</span><button class="del-btn" onclick="removeVideoFile('${id}')">✕</button>`;
+    document.getElementById('video-file-list').appendChild(d);
+  }); input.value='';
+}
+function removeVideoFile(id) { document.getElementById(`vfile-${id}`)?.remove(); videoFiles=videoFiles.filter(v=>v.id!==id); }
+
+function previewPhoto(input) {
+  const file=input.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    mentorPhotoUrl=e.target.result;
+    const el=document.getElementById('photo-preview');
+    el.innerHTML=`<img src="${mentorPhotoUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+    el.style.border='2px solid var(--a)';
+  }; r.readAsDataURL(file);
+}
+function goVerify() { document.getElementById('m-s1').style.display='none'; document.getElementById('m-s2').style.display='block'; }
+function backToStep1() { document.getElementById('m-s2').style.display='none'; document.getElementById('m-s1').style.display='block'; }
+function selectVerify(type) {
+  selectedVerify=type;
+  document.querySelectorAll('.v-opt').forEach(el=>el.classList.remove('sel'));
+  document.getElementById(`opt-${type}`).classList.add('sel');
+  document.getElementById('verify-email-area').style.display=type==='email'?'block':'none';
+}
+function sendCode() {
+  const email=document.getElementById('company-email').value;
+  if(!email||!email.includes('@')){showToast('⚠️ 올바른 회사 이메일을 입력해주세요.');return;}
+  document.getElementById('code-area').style.display='block';
+  showToast(`📧 ${email}으로 인증 코드를 발송했어요!`);
+}
+function confirmCode() {
+  if(document.getElementById('verify-code').value.length<4){showToast('⚠️ 인증 코드를 입력해주세요.');return;}
+  selectedVerify='email_verified'; showToast('✅ 이메일 인증 완료! 🥇 프리미엄 인증 획득');
+}
+function submitMentor() {
+  if(!selectedVerify){showToast('⚠️ 인증 방법을 선택해주세요.');return;}
+  const vl=selectedVerify==='email_verified'?'gold':selectedVerify==='linkedin'?'silver':'bronze';
+  const name=document.getElementById('m-name').value.trim()||'익명';
+  const co=document.getElementById('m-company').value.trim()||'미입력';
+  const role=document.getElementById('m-role').value.trim()||'미입력';
+  const year=(document.getElementById('m-year').value||'2025년').replace('년','');
+  const price=parseInt(document.getElementById('m-price').value)||20000;
+  const bio=document.getElementById('m-bio').value.trim();
+  const help=document.getElementById('m-help').value.trim();
+  const skills=document.getElementById('m-skills').value.trim();
+  const vlinks=videoLinkRows.map(id=>({title:document.getElementById(`vl-title-${id}`)?.value||'',url:document.getElementById(`vl-url-${id}`)?.value||''})).filter(v=>v.url.trim());
+  const elinks=extLinkRows.map(id=>({title:document.getElementById(`el-title-${id}`)?.value||'',url:document.getElementById(`el-url-${id}`)?.value||''})).filter(e=>e.url.trim());
+  mentorsData.unshift({
+    id:Date.now(),name,avatar:name[0],avatarBg:COLORS[Math.floor(Math.random()*COLORS.length)],
+    photo:mentorPhotoUrl,company:co,role,year,tags:[co,role.split(' ')[0]].filter(Boolean),
+    price,rating:0,reviews:0,chatCount:0,category:'all',verifyLevel:vl,
+    bio,help,skills,career:getCareerData(),mediaPhotos:[...mediaPhotos],
+    videoLinks:vlinks,extLinks:elinks,videoFiles:[...videoFiles],
+  });
+  resetMentorForm(); closeModal('mentor'); applyFilters();
+  showToast(`🎉 등록 완료! ${vl==='gold'?'🥇 프리미엄':vl==='silver'?'🥈 검증':'🥉 기본'} 인증 뱃지 획득!`);
+}
+function resetMentorForm() {
+  ['m-name','m-company','m-role','m-price','m-bio','m-help','m-skills','company-email','verify-code']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('m-year').value='';
+  const pp=document.getElementById('photo-preview');
+  pp.innerHTML='📷'; pp.style.border='2px dashed var(--border2)';
+  ['career-list','media-photo-grid','video-link-list','ext-link-list','video-file-list']
+    .forEach(id=>{document.getElementById(id).innerHTML='';});
+  document.getElementById('verify-email-area').style.display='none';
+  document.getElementById('code-area').style.display='none';
+  document.querySelectorAll('.v-opt').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('m-s1').style.display='block';
+  document.getElementById('m-s2').style.display='none';
+  mentorPhotoUrl=null;selectedVerify=null;
+  careerRows=[];mediaPhotos=[];videoLinkRows=[];extLinkRows=[];videoFiles=[];
+  switchTab(1);
+}
+
+function openProfile(id) {
+  const m=mentorsData.find(x=>x.id===id); if(!m) return;
+  currentMentor=m;
+  document.getElementById('pp-cover-bg').style.background=m.avatarBg;
+  const av=document.getElementById('pp-av');
+  av.style.background=m.avatarBg;
+  av.innerHTML=m.photo?`<img src="${m.photo}" alt="${m.name}">`:`<span style="font-size:36px;font-weight:800;color:#fff;">${m.avatar}</span>`;
+  document.getElementById('pp-name').textContent=m.name;
+  document.getElementById('pp-badge').innerHTML=BADGE_FULL[m.verifyLevel]||'';
+  document.getElementById('pp-headline').textContent=`${m.role} · ${m.company}`;
+  document.getElementById('pp-loc-text').textContent=`${m.company} · ${m.year}년 합격`;
+  document.getElementById('pp-m-chats').textContent=m.chatCount||0;
+  document.getElementById('pp-m-rating').textContent=m.reviews>0?`★${m.rating}`:'—';
+  document.getElementById('pp-m-reviews').textContent=m.reviews||0;
+  const starBtn=document.getElementById('pp-star-btn');
+  const isSaved=savedIds.includes(m.id);
+  starBtn.textContent=isSaved?'★':'☆'; starBtn.style.color=isSaved?'var(--gold)':'';
+  const S=(secId,show,fn)=>{ const el=document.getElementById(secId); el.style.display=show?'block':'none'; if(show&&fn)fn(); };
+  S('pp-bio-sec',!!m.bio,()=>{document.getElementById('pp-bio').textContent=m.bio;});
+  S('pp-help-sec',!!m.help,()=>{document.getElementById('pp-help-tags').innerHTML=m.help.split(',').map(h=>`<span class="chip chip-h">${h.trim()}</span>`).join('');});
+  S('pp-career-sec',!!(m.career&&m.career.length),()=>{
+    document.getElementById('pp-career-list').innerHTML=m.career.map(c=>{
+      const ct=CAREER_TYPES[c.type]||CAREER_TYPES.work;
+      return `<div class="pp-career-item"><div class="pp-career-icon ${ct.cls}">${ct.icon}</div><div class="pp-career-detail"><div class="pp-career-content">${escHtml(c.content)}</div><div class="pp-career-meta"><span class="pp-career-type-pill ${ct.cls}">${ct.label}</span>${c.period?`<span class="pp-career-period">🗓 ${escHtml(c.period)}</span>`:''}</div></div></div>`;
+    }).join('');
+  });
+  S('pp-skills-sec',!!m.skills,()=>{document.getElementById('pp-skills-tags').innerHTML=m.skills.split(',').map(s=>`<span class="chip chip-s">${s.trim()}</span>`).join('');});
+  S('pp-media-sec',!!(m.mediaPhotos&&m.mediaPhotos.length),()=>{document.getElementById('pp-media-grid').innerHTML=m.mediaPhotos.map(p=>`<div class="pp-media-cell"><img src="${p.url}" alt="활동 사진"><div class="pp-media-cell-overlay"></div></div>`).join('');});
+  const vlinks=(m.videoLinks||[]).filter(v=>v.url);
+  const elinks=(m.extLinks||[]).filter(e=>e.url);
+  const vfiles=m.videoFiles||[];
+  S('pp-links-sec',!!(vlinks.length||elinks.length||vfiles.length),()=>{
+    let html='';
+    vlinks.forEach(v=>{html+=`<a class="pp-link-card" href="${v.url}" target="_blank" rel="noopener"><div class="pp-link-favicon">${getLinkIcon(v.url)}</div><div class="pp-link-body"><div class="pp-link-title">${escHtml(v.title||'활동 영상')}</div><div class="pp-link-url">${getLinkDomain(v.url)}</div></div><span class="pp-link-arrow">↗</span></a>`;});
+    elinks.forEach(e=>{html+=`<a class="pp-link-card" href="${e.url}" target="_blank" rel="noopener"><div class="pp-link-favicon">${getLinkIcon(e.url)}</div><div class="pp-link-body"><div class="pp-link-title">${escHtml(e.title||getLinkDomain(e.url))}</div><div class="pp-link-url">${getLinkDomain(e.url)}</div></div><span class="pp-link-arrow">↗</span></a>`;});
+    vfiles.forEach(f=>{html+=`<div class="pp-video-item"><div class="pp-video-icon">🎬</div><div class="pp-video-info"><div class="pp-video-title">${escHtml(f.name)}</div><div class="pp-video-sub">${f.size}</div></div></div>`;});
+    document.getElementById('pp-links-list').innerHTML=html;
+  });
+  const reviews=m.reviews>0?SAMPLE_REVIEWS.slice(0,Math.min(m.reviews,3)):[];
+  S('pp-review-sec',reviews.length>0,()=>{document.getElementById('pp-review-list').innerHTML=reviews.map(rv=>`<div class="review-item"><div class="review-hd"><span class="review-name">${rv.name}</span><span class="review-stars">${'★'.repeat(rv.stars)}</span></div><div class="review-text">${rv.text}</div><div class="review-date">${rv.date}</div></div>`).join('');});
+  document.getElementById('pp-price').textContent=`₩${m.price.toLocaleString()} / 30분`;
+  const bookFn=()=>bookMentor(m.name,m.company,m.id);
+  document.getElementById('pp-book-btn').onclick=bookFn;
+  document.getElementById('pp-book-btn2').onclick=bookFn;
+  document.getElementById('pp-chat-btn').onclick=()=>openChat(m.id);
+  document.getElementById('pp-chat-btn2').onclick=()=>openChat(m.id);
+  document.getElementById('pp-share-btn').onclick=()=>{
+    if(navigator.share) navigator.share({title:`${m.name} - 패스커넥션`,text:`${m.company} ${m.role} 합격자 멘토`});
+    else navigator.clipboard?.writeText(location.href).then(()=>showToast('🔗 링크가 복사됐어요!'));
+  };
+  const page=document.getElementById('profile-page');
+  page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+}
+function closeProfile() { document.getElementById('profile-page').classList.remove('open'); document.body.style.overflow=''; currentMentor=null; }
+
+function openChat(id) {
+  const m=mentorsData.find(x=>x.id===id); if(!m) return;
+  currentChat=m;
+  if(!chatHistories[id]) chatHistories[id]=[];
+  const chatAv=document.getElementById('chat-av');
+  chatAv.style.background=m.avatarBg;
+  chatAv.innerHTML=m.photo?`<img src="${m.photo}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover;">`:`<span style="font-size:14px;font-weight:800;color:#fff;">${m.avatar}</span>`;
+  document.getElementById('chat-name').textContent=m.name;
+  document.getElementById('chat-status').textContent='● 온라인';
+  renderMessages(id);
+  document.getElementById('chat-panel').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('chat-input').focus();
+  if(chatHistories[id].length===0) setTimeout(()=>addMsg(id,'mentor',`안녕하세요, ${m.name}입니다! 😊 취업 준비에 대해 궁금한 점이 있으면 편하게 물어보세요.`),700);
+}
+function closeChat() { document.getElementById('chat-panel').classList.remove('open'); document.body.style.overflow=''; currentChat=null; }
+function addMsg(id,type,text) {
+  const time=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  chatHistories[id].push({type,text,time});
+  if(currentChat&&currentChat.id===id) renderMessages(id);
+}
+function renderMessages(id) {
+  const m=mentorsData.find(x=>x.id===id);
+  const container=document.getElementById('chat-messages');
+  const msgs=chatHistories[id]||[];
+  if(!msgs.length){container.innerHTML='';return;}
+  const avHtml=m.photo?`<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">`:`<span style="font-size:12px;font-weight:800;color:#fff;">${m.avatar}</span>`;
+  container.innerHTML=msgs.map(msg=>{
+    const isMe=msg.type==='user';
+    if(isMe) return `<div class="msg-row mine"><div><div class="msg-bubble">${escHtml(msg.text)}</div><div class="msg-time">${msg.time}</div></div></div>`;
+    return `<div class="msg-row"><div class="msg-av" style="background:${m.avatarBg};">${avHtml}</div><div><div class="msg-bubble">${escHtml(msg.text)}</div><div class="msg-time">${msg.time}</div></div></div>`;
+  }).join('');
+  container.scrollTop=container.scrollHeight;
+}
+function sendMsg() {
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim(); if(!text||!currentChat) return;
+  const id=currentChat.id; addMsg(id,'user',text);
+  input.value=''; input.style.height='';
+  const m=mentorsData.find(x=>x.id===id);
+  const avHtml=m.photo?`<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;">`:`<span style="font-size:12px;font-weight:800;color:#fff;">${m.avatar}</span>`;
+  const container=document.getElementById('chat-messages');
+  const typingEl=document.createElement('div'); typingEl.className='msg-row'; typingEl.id='typing-indicator';
+  typingEl.innerHTML=`<div class="msg-av" style="background:${m.avatarBg};">${avHtml}</div><div class="msg-bubble" style="background:var(--surf2);border:1px solid var(--border);"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  container.appendChild(typingEl); container.scrollTop=container.scrollHeight;
+  setTimeout(()=>{ document.getElementById('typing-indicator')?.remove(); addMsg(id,'mentor',MENTOR_REPLIES[Math.floor(Math.random()*MENTOR_REPLIES.length)]); },1200+Math.random()*900);
+}
+function autoResize(el) { el.style.height=''; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+let toastTimer=null;
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3400);
+}
+function smoothScroll(id) { if(id==='top'){window.scrollTo({top:0,behavior:'smooth'});return;} document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+
+function makeCoffeeTokenSVG(size=80) {
+  const s=size;
+  return `<defs><radialGradient id="cg${s}" cx="45%" cy="35%" r="60%"><stop offset="0%" stop-color="#e8b48c"/><stop offset="60%" stop-color="#c8956c"/><stop offset="100%" stop-color="#8b5e3c"/></radialGradient></defs>
+  <circle cx="${s/2}" cy="${s/2}" r="${s/2-1}" fill="url(#cg${s})"/>
+  <circle cx="${s/2}" cy="${s/2}" r="${s/2-1}" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+  <rect x="${s*.3}" y="${s*.35}" width="${s*.28}" height="${s*.28}" rx="${s*.07}" fill="white" opacity=".9"/>
+  <path d="M${s*.58} ${s*.44} Q${s*.68} ${s*.44} ${s*.68} ${s*.5} Q${s*.68} ${s*.56} ${s*.58} ${s*.56}" fill="none" stroke="white" stroke-width="${s*.03}" stroke-linecap="round" opacity=".9"/>
+  <rect x="${s*.27}" y="${s*.63}" width="${s*.34}" height="${s*.055}" rx="${s*.025}" fill="rgba(255,255,255,.6)"/>`;
+}
+function initTokenSVGs() { ['hero-token-svg','pay-token-svg'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=makeCoffeeTokenSVG(80);}); }
+
+let myCoins=0;
+let selPkg={coins:3,price:36000,bonus:3,id:'pkg-3'};
+let selMethod='naver';
+
+function updateCoinDisplay() { document.querySelectorAll('.nav-coins-count').forEach(el=>el.textContent=myCoins+'개'); const cur=document.getElementById('pay-cur-coins'); if(cur)cur.textContent=myCoins+'개'; updateNavUser(); }
+function selectPkg(el,coins,price,bonus) { document.querySelectorAll('.pay-pkg').forEach(p=>p.classList.remove('sel')); el.classList.add('sel'); selPkg={coins,price,bonus,id:el.id}; updatePayConfirm(); }
+function selectPayMethod(el,method) { document.querySelectorAll('.pay-method').forEach(p=>p.classList.remove('sel')); el.classList.add('sel'); selMethod=method; const names={naver:'네이버페이',toss:'토스뱅크',card:'신용·체크카드',bank:'인터넷뱅킹'}; document.getElementById('pc-method').textContent=names[method]||method; }
+function updatePayConfirm() { const total=selPkg.coins+selPkg.bonus; document.getElementById('pc-pkg').textContent=selPkg.coins+'개'+(selPkg.bonus?` (+보너스 ${selPkg.bonus}개)`:''); document.getElementById('pc-price').textContent='₩'+selPkg.price.toLocaleString(); document.getElementById('pc-after').textContent=(myCoins+total)+'개'; }
+
+function openModal(id) {
+  if(id==='payment'){document.getElementById('pay-cur-coins').textContent=myCoins+'개';updatePayConfirm();initTokenSVGs();}
+  document.getElementById(`modal-${id}`).classList.add('open');
+}
+
+let currentUser=null;
+function openLoginPage(tab='login'){switchLoginTab(tab);document.getElementById('login-page').classList.add('open');document.body.style.overflow='hidden';}
+function closeLoginPage(){document.getElementById('login-page').classList.remove('open');document.body.style.overflow='';}
+function switchLoginTab(tab){document.getElementById('ltab-login').classList.toggle('active',tab==='login');document.getElementById('ltab-signup').classList.toggle('active',tab==='signup');document.getElementById('lpanel-login').style.display=tab==='login'?'':'none';document.getElementById('lpanel-signup').style.display=tab==='signup'?'':'none';}
+function togglePw(id,btn){const el=document.getElementById(id);if(el.type==='password'){el.type='text';btn.textContent='🙈';}else{el.type='password';btn.textContent='👁';}}
+
+function updateNavUser(){
+  const navRight=document.getElementById('nav-right'); if(!navRight) return;
+  if(currentUser){
+    navRight.innerHTML=`<button class="nav-icon-btn" onclick="showToast('🔔 새 알림이 없어요')">🔔</button>
+      <div class="nav-coins" onclick="openModal('payment')" title="토큰 충전">
+        <svg style="width:14px;height:14px;" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${makeCoffeeTokenSVG(80)}</svg>
+        <span class="nav-coins-count">${myCoins}개</span>
+      </div>
+      <div class="nav-user-av" title="${currentUser.name||''}" onclick="doLogout()">${(currentUser.name||'U')[0]}</div>`;
+  } else {
+    navRight.innerHTML=`<button class="nav-icon-btn" onclick="showToast('🔔 새 알림이 없어요')">🔔<span class="notif-dot"></span></button>
+      <button class="btn btn-ghost btn-sm" onclick="openModal('mentor')">멘토 등록</button>
+      <button class="btn btn-primary btn-sm" onclick="openLoginPage('login')">로그인</button>`;
+  }
+}
+
+showSkeleton(6);
+setTimeout(()=>renderMentors(mentorsData),800);
+initTokenSVGs();
+</script>
+
+<script>
+const TOKEN_KEY='pc_jwt';
+function getToken(){return localStorage.getItem(TOKEN_KEY);}
+function setToken(t){localStorage.setItem(TOKEN_KEY,t);}
+function clearToken(){localStorage.removeItem(TOKEN_KEY);}
+
+async function apiFetch(url,options={}){
+  const token=getToken();
+  const headers={'Content-Type':'application/json',...options.headers};
+  if(token) headers['Authorization']=`Bearer ${token}`;
+  const res=await fetch(url,{...options,headers});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error||'서버 오류가 발생했습니다.');
+  return data;
+}
+
+function doLogin(token,user){setToken(token);currentUser=user;myCoins=user.coins||0;closeLoginPage();updateNavUser();showToast(`✅ ${user.name||''}님, 환영해요!`);}
+function doLogout(){clearToken();currentUser=null;myCoins=0;updateNavUser();showToast('로그아웃 됐어요.');}
+
+(async()=>{
+  const params=new URLSearchParams(location.search);
+  const token=params.get('token');
+  const auth=params.get('auth');
+  if(token&&auth==='success'){
+    setToken(token); history.replaceState({},'','/');
+    try{const data=await apiFetch('/api/auth/me');currentUser=data.user;myCoins=data.user.coins||0;updateNavUser();showToast(`✅ ${data.user.name||''}님, 로그인됐어요!`);}catch(e){clearToken();}
+  } else if(auth==='fail'){history.replaceState({},'','/');showToast('⚠️ 소셜 로그인에 실패했어요.');}
+  if(!currentUser&&getToken()){
+    try{const data=await apiFetch('/api/auth/me');currentUser=data.user;myCoins=data.user.coins||0;updateNavUser();}catch(e){clearToken();}
+  }
+})();
+
+function socialLogin(provider){location.href=`/api/auth/${provider}`;}
+
+async function submitLogin(){
+  const email=document.getElementById('l-email')?.value?.trim();
+  const password=document.getElementById('l-pw')?.value;
+  if(!email||!password){showToast('⚠️ 이메일과 비밀번호를 입력해주세요.');return;}
+  try{const data=await apiFetch('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});doLogin(data.token,data.user);}
+  catch(e){showToast('❌ '+e.message);}
+}
+
+async function submitSignupNew(){
+  const name=document.getElementById('s-name')?.value?.trim();
+  const email=document.getElementById('s-email')?.value?.trim();
+  const password=document.getElementById('s-pw')?.value;
+  const phone=(document.getElementById('s-phone')?.value||'').replace(/-/g,'');
+  if(!name){showToast('⚠️ 이름을 입력해주세요.');return;}
+  if(!email){showToast('⚠️ 이메일을 입력해주세요.');return;}
+  if(!password||password.length<8){showToast('⚠️ 비밀번호는 8자 이상이어야 합니다.');return;}
+  try{const data=await apiFetch('/api/auth/register',{method:'POST',body:JSON.stringify({name,email,password,phone})});doLogin(data.token,data.user);showToast('🎉 가입 완료! ☕ 토큰 1개를 선물로 드렸어요!');}
+  catch(e){showToast('❌ '+e.message);}
+}
+
+async function sendSmsCode(){
+  const phone=(document.getElementById('s-phone')?.value||'').replace(/-/g,'');
+  if(!phone||phone.length<10){showToast('⚠️ 전화번호를 입력해주세요.');return;}
+  try{const data=await apiFetch('/api/sms/send',{method:'POST',body:JSON.stringify({phone})});showToast('📱 인증문자를 발송했어요!');document.getElementById('sms-verify-area').style.display='';if(data.devCode)console.log('[SMS 개발모드] 코드:',data.devCode);}
+  catch(e){showToast('❌ '+e.message);}
+}
+
+async function verifySmsCode(){
+  const phone=(document.getElementById('s-phone')?.value||'').replace(/-/g,'');
+  const code=document.getElementById('s-sms-code')?.value;
+  if(!code){showToast('⚠️ 인증번호를 입력해주세요.');return;}
+  try{await apiFetch('/api/sms/verify',{method:'POST',body:JSON.stringify({phone,code})});showToast('✅ 전화번호 인증 완료!');document.getElementById('sms-verify-area').innerHTML='<div style="color:var(--a3);font-size:12px;font-weight:700;">✅ 전화번호 인증 완료</div>';}
+  catch(e){showToast('❌ '+e.message);}
+}
+
+async function processPayment(){
+  if(!currentUser){openLoginPage('login');showToast('💡 로그인 후 결제할 수 있어요.');return;}
+  const btn=document.getElementById('pay-submit-btn');
+  btn.textContent='처리 중...'; btn.disabled=true;
+  try{
+    const pkgKey=selPkg.coins;
+    const prep=await apiFetch('/api/payment/prepare',{method:'POST',body:JSON.stringify({packageKey:pkgKey})});
+    const secretKey=prep.clientKey||'';
+    if(secretKey.startsWith('test_')||secretKey==='test_ck_placeholder'||secretKey===''){
+      await confirmPayment({paymentKey:'test_pay_'+Date.now(),orderId:prep.orderId,amount:prep.amount});
+    } else {
+      await loadScript('https://js.tosspayments.com/v1/payment');
+      const toss=TossPayments(prep.clientKey);
+      await toss.requestPayment('카드',{amount:prep.amount,orderId:prep.orderId,orderName:prep.orderName,successUrl:location.origin+'/payment/success',failUrl:location.origin+'/payment/fail'});
+    }
+  }catch(e){showToast('❌ '+e.message);btn.textContent='결제하고 토큰 충전하기 ☕';btn.disabled=false;}
+}
+
+async function confirmPayment({paymentKey,orderId,amount}){
+  try{
+    const data=await apiFetch('/api/payment/confirm',{method:'POST',body:JSON.stringify({paymentKey,orderId,amount})});
+    currentUser.coins=data.coins; myCoins=data.coins; updateCoinDisplay();
+    document.getElementById('pay-main').style.display='none';
+    document.getElementById('pay-success').style.display='';
+    document.getElementById('ps-coins').textContent=data.coins+'개';
+  }catch(e){showToast('❌ '+e.message);}
+  finally{const btn=document.getElementById('pay-submit-btn');if(btn){btn.textContent='결제하고 토큰 충전하기 ☕';btn.disabled=false;}}
+}
+
+if(location.pathname==='/payment/success'){const p=new URLSearchParams(location.search);confirmPayment({paymentKey:p.get('paymentKey'),orderId:p.get('orderId'),amount:Number(p.get('amount'))}).then(()=>history.replaceState({},'/','/'));}
+if(location.pathname==='/payment/fail'){showToast('결제가 취소됐습니다.');history.replaceState({},'','/');}
+
+async function bookMentor(name,company,mentorId){
+  if(!currentUser){openLoginPage('login');showToast('💡 예약하려면 먼저 로그인해주세요.');return;}
+  if(myCoins<1){openModal('payment');showToast('☕ 토큰이 부족해요! 충전해주세요.');return;}
+  try{const data=await apiFetch('/api/payment/use-coin',{method:'POST',body:JSON.stringify({mentorId})});myCoins=data.coins;if(currentUser)currentUser.coins=data.coins;updateCoinDisplay();showToast(`✅ ${company} ${name}님께 예약 요청을 보냈어요!`);}
+  catch(e){showToast('❌ '+e.message);}
+}
+
+function loadScript(src){return new Promise((resolve,reject)=>{if(document.querySelector(`script[src="${src}"]`))return resolve();const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s);});}
+</script>
+</body>
+</html>
