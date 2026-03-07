@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>패스커넥션 - 현직자와 취준생을 연결하다</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0f0f23; color: #fff; min-height: 100vh; }
+nav { background:#1a1a2e; padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; border-bottom:1px solid #333; }
+nav a.logo { color:#6c63ff; font-size:1.3rem; font-weight:700; text-decoration:none; }
+nav .links a, nav .links button { color:#ccc; text-decoration:none; background:transparent; border:none; cursor:pointer; font-size:1rem; padding: 0; }
+nav .links { display:flex; gap:1rem; align-items:center; }
+.btn { background:#6c63ff; color:#fff; border:none; padding:.8rem 2rem; border-radius:10px; font-size:1rem; cursor:pointer; text-decoration:none; display:inline-block; }
+.btn-outline { background:transparent; color:#6c63ff; border:2px solid #6c63ff; }
+.card { background:#1a1a2e; border:1px solid #333; border-radius:12px; padding:1.5rem; }
+input { width:100%; padding:.8rem; background:#0f0f23; border:1px solid #444; border-radius:8px; color:#fff; margin-bottom:.8rem; font-size:1rem; }
+.error { color:#ff6b6b; margin-bottom:1rem; display:none; }
+#app { min-height:100vh; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const API = '';
+let token = localStorage.getItem('pc_token');
+let user = null;
+const app = document.getElementById('app');
+
+async function apiFetch(method, path, body) {
+  const headers = {'Content-Type':'application/json'};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(API + path, {method, headers, body: body ? JSON.stringify(body) : undefined});
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || '오류');
+  return data;
+}
+
+function navHtml() {
+  return '<nav><a class="logo" href="#" onclick="go('home')">🎓 패스커넥션</a><div class="links">' +
+    '<a href="#" onclick="go('mentors')">멘토 찾기</a>' +
+    (user ? '<a href="#" onclick="go('mypage')">마이페이지</a><button onclick="logout()">로그아웃</button>'
+           : '<a href="#" onclick="go('login')">로그인</a><a class="btn" href="#" onclick="go('register')" style="padding:.4rem 1rem;font-size:.9rem">회원가입</a>') +
+    '</div></nav>';
+}
+
+function go(page) {
+  ({home:renderHome, login:renderLogin, register:renderRegister, mentors:renderMentors, mypage:renderMypage}[page] || renderHome)();
+}
+
+function renderHome() {
+  app.innerHTML = navHtml() + '<div style="max-width:900px;margin:0 auto;padding:4rem 2rem;text-align:center">' +
+    '<div style="font-size:4rem">🎓</div>' +
+    '<h1 style="font-size:2.5rem;margin:1rem 0;background:linear-gradient(135deg,#6c63ff,#4ecdc4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">현직자와 취준생을 연결하다</h1>' +
+    '<p style="color:#aaa;font-size:1.1rem;margin-bottom:2rem">토큰 1개로 현직자와 커피챗 한 번!<br>13,000원으로 현실적인 취업 조언을 받아보세요.</p>' +
+    '<div style="display:flex;gap:1rem;justify-content:center">' +
+    '<button class="btn" onclick="go('mentors')">멘토 찾기 →</button>' +
+    (!user ? '<button class="btn btn-outline" onclick="go('register')">시작하기</button>' : '') +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:4rem;text-align:left">' +
+    [['🏢','현직자 직접 연결','대기업·스타트업 현직자와 1:1 커피챗'],
+     ['💰','1토큰 = 1커피챗','13,000원으로 현실적인 조언'],
+     ['⭐','검증된 멘토','실제 취업 성공 경험자들']].map(([i,t,d]) =>
+      '<div class="card"><div style="font-size:2rem;margin-bottom:.5rem">'+i+'</div><h3 style="margin-bottom:.5rem">'+t+'</h3><p style="color:#888;font-size:.9rem">'+d+'</p></div>'
+    ).join('') + '</div></div>';
+}
+
+function renderLogin() {
+  app.innerHTML = navHtml() + '<div style="max-width:400px;margin:4rem auto;padding:2rem" class="card">' +
+    '<h2 style="margin-bottom:1.5rem;text-align:center">로그인</h2>' +
+    '<div id="err" class="error"></div>' +
+    '<input id="em" type="email" placeholder="이메일">' +
+    '<input id="pw" type="password" placeholder="비밀번호">' +
+    '<button class="btn" style="width:100%;margin-top:.5rem" onclick="doLogin()">로그인</button>' +
+    '<p style="text-align:center;margin-top:1rem;color:#888">계정이 없으신가요? <a href="#" onclick="go('register')" style="color:#6c63ff">회원가입</a></p>' +
+    '</div>';
+}
+
+async function doLogin() {
+  const em = document.getElementById('em').value, pw = document.getElementById('pw').value;
+  const err = document.getElementById('err');
+  try {
+    const d = await apiFetch('POST', '/api/auth/login', {email:em, password:pw});
+    token=d.token; user=d.user; localStorage.setItem('pc_token',token); go('home');
+  } catch(e) { err.textContent=e.message; err.style.display='block'; }
+}
+
+function renderRegister() {
+  app.innerHTML = navHtml() + '<div style="max-width:420px;margin:3rem auto;padding:2rem" class="card">' +
+    '<h2 style="margin-bottom:1.5rem;text-align:center">회원가입</h2>' +
+    '<div id="err" class="error"></div>' +
+    '<input id="nm" placeholder="이름">' +
+    '<input id="em" type="email" placeholder="이메일">' +
+    '<input id="pw" type="password" placeholder="비밀번호 (8자 이상)">' +
+    '<button class="btn" style="width:100%;margin-top:.5rem" onclick="doRegister()">가입하기</button>' +
+    '<p style="text-align:center;margin-top:1rem;color:#888">이미 계정이 있으신가요? <a href="#" onclick="go('login')" style="color:#6c63ff">로그인</a></p>' +
+    '</div>';
+}
+
+async function doRegister() {
+  const nm=document.getElementById('nm').value, em=document.getElementById('em').value, pw=document.getElementById('pw').value;
+  const err=document.getElementById('err');
+  try {
+    const d = await apiFetch('POST','/api/auth/register',{name:nm,email:em,password:pw});
+    token=d.token; user=d.user; localStorage.setItem('pc_token',token);
+    alert('환영합니다! 가입 코인 1개가 지급되었습니다 🎉'); go('home');
+  } catch(e) { err.textContent=e.message; err.style.display='block'; }
+}
+
+async function renderMentors() {
+  app.innerHTML = navHtml() + '<div style="max-width:1000px;margin:2rem auto;padding:1rem 2rem"><h2 style="margin-bottom:1.5rem">멘토 찾기</h2><div id="list" style="color:#888">로딩 중...</div></div>';
+  try {
+    const {mentors} = await apiFetch('GET', '/api/mentor');
+    const list = document.getElementById('list');
+    if (!mentors.length) { list.innerHTML='<p>등록된 멘토가 없습니다.</p>'; return; }
+    list.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem">' +
+      mentors.map(m => '<div class="card">' +
+        '<div style="display:flex;gap:1rem;margin-bottom:1rem;align-items:center">' +
+        (m.avatar ? '<img src="'+m.avatar+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover">' : '<div style="width:48px;height:48px;background:#6c63ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem">👤</div>') +
+        '<div><strong>'+(m.nickname||m.name)+'</strong><p style="color:#888;font-size:.85rem">'+(m.mentorInfo?.company||'')+' · '+(m.mentorInfo?.role||'')+'</p></div></div>' +
+        '<p style="color:#aaa;font-size:.9rem;margin-bottom:1rem">'+(m.bio||'소개 없음')+'</p>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<span style="color:#6c63ff;font-weight:600">'+((m.mentorInfo?.price||13000).toLocaleString())+'원</span>' +
+        (user ? '<button onclick="useCoin(''+m._id+'',this)" style="background:#6c63ff;color:#fff;border:none;padding:.4rem 1rem;border-radius:8px;cursor:pointer">커피챗 신청</button>'
+               : '<button onclick="go('login')" style="background:#444;color:#ccc;border:none;padding:.4rem 1rem;border-radius:8px;cursor:pointer">로그인 필요</button>') +
+        '</div></div>'
+      ).join('') + '</div>';
+  } catch(e) { document.getElementById('list').textContent='오류: '+e.message; }
+}
+
+async function useCoin(mentorId, btn) {
+  if (!confirm('코인 1개를 사용해 커피챗을 신청하시겠습니까?')) return;
+  try {
+    const d = await apiFetch('POST','/api/payment/use-coin',{mentorId});
+    alert('커피챗이 신청되었습니다! 남은 코인: '+d.coins); btn.textContent='신청완료'; btn.disabled=true; btn.style.background='#444';
+  } catch(e) { alert(e.message); }
+}
+
+function renderMypage() {
+  if (!user) { go('login'); return; }
+  app.innerHTML = navHtml() + '<div style="max-width:600px;margin:3rem auto;padding:2rem">' +
+    '<h2 style="margin-bottom:2rem">마이페이지</h2>' +
+    '<div class="card"><div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">' +
+    '<div style="width:64px;height:64px;background:#6c63ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem">👤</div>' +
+    '<div><h3>'+user.name+'</h3><p style="color:#888">'+user.email+'</p></div></div>' +
+    '<div style="background:#0f0f23;border-radius:8px;padding:1rem;margin-bottom:1rem;display:flex;justify-content:space-between">' +
+    '<span style="color:#888">보유 코인</span><span style="color:#6c63ff;font-size:1.2rem;font-weight:700">'+user.coins+'개</span></div>' +
+    '<button class="btn" style="width:100%" onclick="go('mentors')">멘토 찾기</button></div></div>';
+}
+
+function logout() { token=null; user=null; localStorage.removeItem('pc_token'); go('home'); }
+window.go=go; window.doLogin=doLogin; window.doRegister=doRegister; window.useCoin=useCoin; window.logout=logout;
+
+(async()=>{
+  const params = new URLSearchParams(location.search);
+  if (params.get('token')) { token=params.get('token'); localStorage.setItem('pc_token',token); history.replaceState(null,'','/'); }
+  if (token) { try { const d=await apiFetch('GET','/api/auth/me'); user=d.user; } catch(e) { token=null; localStorage.removeItem('pc_token'); } }
+  go('home');
+})();
+</script>
+</body>
+</html>
