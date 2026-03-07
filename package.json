@@ -1,7 +1,7 @@
 {
   "name": "passconnection",
   "version": "1.0.0",
-  "description": "í¨ì¤ì»¤ë¥ì - í©ê²©ìì ì·¨ì¤ìì ìë¤",
+  "description": "Ã­ÂÂ¨Ã¬ÂÂ¤Ã¬Â»Â¤Ã«ÂÂ¥Ã¬ÂÂ - Ã­ÂÂ©ÃªÂ²Â©Ã¬ÂÂÃ¬ÂÂ Ã¬Â·Â¨Ã¬Â¤ÂÃ¬ÂÂÃ¬ÂÂ Ã¬ÂÂÃ«ÂÂ¤",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
@@ -19,7 +19,7 @@
     "axios": "^1.6.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-naver": "^0.0.8",
+    "passport-naver-v2": "^2.0.8",
     "express-session": "^1.17.3",
     "connect-mongo": "^5.1.0",
     "multer": "^1.4.5-lts.1",
